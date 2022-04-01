@@ -1,20 +1,18 @@
 import java.util.Arrays;
-import java.util.Random;
 
 public class Queens {
-
     /**
      * número de de rainhas
      */
     int N;
-
     /**
      * pos[i] - em qual coluna está a rainha da linha i
      */
     int pos[];
 
-    Random rd = new Random(7);
-
+    /**
+     * @param n - número de rainhas a serem posicionadas
+     */
     public Queens(int n) {
         N = n;
         pos = new int[n];
@@ -99,7 +97,7 @@ public class Queens {
         for (int i = 0; i < N; i++)
             pos[i] = i;
         for (int i = N - 1; i > 0; i--) {
-            int x = rd.nextInt(i);
+            int x = Utils.rd.nextInt(i);
             //swap
             int aux = pos[i];
             pos[i] = pos[x];
@@ -108,27 +106,36 @@ public class Queens {
 
     }
 
-
+    /**
+     * @param k linha do tabuleiro (0 <= k < N)
+     * @return true - se e somente se não há conflitos
+     * entre rainha na linha k e as anteriores
+     */
     private boolean temConflitoAte(int k) {
-        for (int i = 1; i <= k; i++)
-            for (int j = 0; j < i; j++) {
-                //colunas
-                if (pos[i] == pos[j])
-                    return true;
-                //diagonal \
-                if (i - pos[i] == j - pos[j])
-                    return true;
-                //diagonal /
-                if (i + pos[i] == j + pos[j])
-                    return true;
-            }
+        for (int i = 0; i < k; i++) {
+            //colunas
+            if (pos[k] == pos[i])
+                return true;
+            //diagonal \
+            if (k - pos[k] == i - pos[i])
+                return true;
+            //diagonal /
+            if (k + pos[k] == i + pos[i])
+                return true;
+        }
         return false;
     }
 
+    /**
+     * coloca uma rainha na linha k de forma que não haja conflitos.
+     *
+     * @param k linha do tabuleiro
+     * @return true - se foi possível posicionar a rainha na linha k
+     * sem conflitos.
+     */
     private boolean coloca(int k) {
         for (int i = 0; i < N; i++) {
             pos[k] = i;
-            //testar se tem conflito antes de k
             if (temConflitoAte(k))
                 continue;
             else {
@@ -142,6 +149,10 @@ public class Queens {
         return false;
     }
 
+    /**
+     * Enumera todas as permutações de 'pos' até encontrar uma que
+     * não possua conflitos
+     */
     public void forcaBruta() {
         Arrays.fill(pos, -1);
         for (int i = 0; i < N; i++) {
@@ -151,7 +162,12 @@ public class Queens {
         }
     }
 
-    public void busca(int tries) {
+    /**
+     * Random  Multistart
+     *
+     * @param tries número de pontos de partida aleatórios
+     */
+    public void RMS(int tries) {
         int best_cost = Integer.MAX_VALUE;
         int best_pos[] = new int[N];
         for (int k = 0; k < tries; k++) {
@@ -163,17 +179,17 @@ public class Queens {
                 for (int j = 0; j < i; j++) {
                     Utils.swap(pos, i, j);
                     int pertubed_cost = fo();
-                    if(pertubed_cost < current_cost){
+                    if (pertubed_cost < current_cost) {
                         current_cost = pertubed_cost;
-                        if(current_cost == 0)
+                        if (current_cost == 0)
                             return;
-                        if(current_cost < best_cost){
+                        if (current_cost < best_cost) {
                             best_cost = current_cost;
-                            System.out.println(k+"  "+best_cost);
+                            System.out.println(k + "  " + best_cost);
                             System.arraycopy(pos, 0, best_pos, 0, pos.length);
                         }
 
-                    }else
+                    } else
                         Utils.swap(pos, i, j);
 
                 }
