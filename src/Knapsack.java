@@ -1,5 +1,6 @@
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 
 /**
  * Problema da Mochila 0-1
@@ -67,6 +68,9 @@ public class Knapsack {
 
     }
 
+    /**
+     * resolve recursivamente por divisão e conquista
+     */
     public Sol recursive_solve() {
         ArrayList<Integer> lista = new ArrayList<>();
         for (int i = 0; i < N; i++)
@@ -75,11 +79,20 @@ public class Knapsack {
     }
 
 
+    /**
+     * resolve por programação dinâmica
+     * TA ERRADO!!
+     */
     public Sol DP_solve() {
         int m[] = new int[C + 1];
         int x[] = new int[C + 1];
         Arrays.fill(x, -1);
-        for (int i = 0; i < N; i++) {
+        Integer idx[] = new Integer[N];
+        for (int i = 0; i < N; i++)
+            idx[i] = i;
+        Arrays.sort(idx, Comparator.comparingInt(a -> w[a]));
+
+        for (int i : idx) {
             for (int j = C; j >= w[i]; j--) {
                 if (m[j] > m[j - w[i]] + p[i]) {
 
@@ -89,6 +102,8 @@ public class Knapsack {
                 }
             }
         }
+
+//  versão usando uma matrix
 //        for (int i = 0; i < m.length; i++) {
 //            for (int j = 0; j < m[i].length; j++) {
 //                if (i == 0) {
@@ -101,7 +116,20 @@ public class Knapsack {
 //        }
         System.out.println(Arrays.toString(m));
         System.out.println(Arrays.toString(x));
-        return null;
+        //decodificação da solução
+        Sol sol = new Sol();
+        int c = C;
+        while (c > 0) {
+            int item = x[c];
+            if (sol.lista.isEmpty()
+                    || sol.lista.get(sol.lista.size() - 1) != item) {
+                sol.lista.add(item);
+                sol.premioTotal += p[item];
+                c -= w[item];
+            } else
+                c--;
+        }
+        return sol;
     }
 
     class Sol {

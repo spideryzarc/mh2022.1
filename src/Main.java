@@ -1,12 +1,12 @@
 public class Main {
     public static void main(String args[]) {
 
-        Knapsack k = new Knapsack(15,
-                new int[]{4, 2, 2, 1, 10},
-                new int[]{12, 2, 1, 1, 4});
+        Knapsack k = new Knapsack(13,
+                new int[]{4, 2, 2, 1, 10}, //peso
+                new int[]{12, 2, 1, 1, 4}); //prêmio
 
 //        System.out.println(k.recursive_solve());
-        k.DP_solve();
+        System.out.println(k.DP_solve());
 
 
 //        Queens q = new Queens(30);
