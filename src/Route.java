@@ -140,26 +140,33 @@ public class Route {
 
     public boolean swap_2_first_imp() {
         final double c[][] = tsp.c;
-        for (int i = 1; i < tsp.N; i++)
-            for (int j = 0; j < i; j++) {
-                int anti = i - 1;
-                int antj = (j > 0) ? j - 1 : tsp.N - 1;
-                int prox_i = (i < tsp.N - 1) ? i + 1 : 0;
-                int prox_j = j + 1;
+        for (int idx_i = 1; idx_i < tsp.N; idx_i++)
+            for (int idx_j = 0; idx_j < idx_i; idx_j++) {
+                int i = v[idx_i];
+                int j = v[idx_j];
+                int ant_i = v[idx_i - 1];
+                int ant_j = v[(idx_j > 0) ? idx_j - 1 : tsp.N - 1];
+                int prox_i = v[(idx_i < tsp.N - 1) ? idx_i + 1 : 0];
+                int prox_j = v[idx_j + 1];
 
                 double delta;
-                if (j + 1 == i)
-                    delta = c[antj][i] + c[j][prox_i] - c[antj][j] - c[i][prox_i];
-                else if (j == 0 && i == tsp.N - 1)
-                    delta = c[anti][j] + c[i][prox_j] - c[anti][i] - c[j][prox_j];
+                if (idx_j + 1 == idx_i)
+                    // antj -> j -> i -> proxi
+                    // antj -> i -> j -> proxi
+                    delta = c[ant_j][i] + c[j][prox_i] - c[ant_j][j] - c[i][prox_i];
+                else if (idx_j == 0 && idx_i == tsp.N - 1)
+                    // anti -> i -> j -> proxj
+                    // anti -> j -> i -> proxj
+                    delta = c[ant_i][j] + c[i][prox_j] - c[ant_i][i] - c[j][prox_j];
                 else
                     // antj -> j -> proxj  ... anti-> i -> proxi
                     // antj -> i -> proxj  ... anti-> j -> proxi
-                    delta = c[antj][i] + c[i][prox_j] + c[anti][j] + c[j][prox_i]
-                            - c[antj][j] - c[j][prox_j] - c[anti][i] - c[i][prox_i];
+                    delta = c[ant_j][i] + c[i][prox_j] + c[ant_i][j] + c[j][prox_i]
+                            - c[ant_j][j] - c[j][prox_j] - c[ant_i][i] - c[i][prox_i];
                 if (delta < -0.001) {
-                    Utils.swap(v, i, j);
+                    Utils.swap(v, idx_i, idx_j);
                     cost += delta;
+                    System.out.println("swap " + cost);
                     return true;
                 }
             }

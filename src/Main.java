@@ -7,9 +7,9 @@ public class Main {
 
         r.randomize();
         System.out.println(r);
-        r.swap_2_first_imp();
+        while (r.swap_2_first_imp()) ;
         System.out.println(r);
-        View.plot(r,"plot.csv");
+        View.plot(r, "plot.csv");
 
 //        r.nearestNeighbor(5);
 //        System.out.println(r);
