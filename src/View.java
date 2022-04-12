@@ -23,7 +23,7 @@ public class View {
                 maxY = s.y;
         }
 
-        double r = Math.max(maxX - minX, maxY - minY) / 100;
+        double r = Math.max(maxX - minX, maxY - minY) / 200;
 
         svg.vbXmin = (int) (minX - r);
         svg.vbYmin = (int) (minY - r);
@@ -42,7 +42,7 @@ public class View {
         int i = 0;
         for (Point2D.Double s : rt.tsp.pontos) {
             svg.add(new Circle(s.x, s.y, r, ""));
-            svg.add(new Text(s.x, s.y, "", "" + i));
+            //svg.add(new Text(s.x, s.y, "", "" + i));
             i++;
         }
 

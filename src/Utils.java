@@ -26,4 +26,23 @@ public class Utils {
         }
     }
 
+    public static void roll(int v[]) {
+        if (v[0] == 0)
+            return;
+        int p = -1;
+        for (int i = 1; i < v.length; i++)
+            if (v[i] == 0) {
+                p = i;
+                break;
+            }
+        if (p == -1) {
+            System.err.println("OPS! Roll de um vetor sem zero");
+            return;
+        }
+        int a[] = v.clone();
+        for (int i = 0; i < v.length; i++)
+            v[i] = a[(i + p) % v.length];
+
+    }
+
 }

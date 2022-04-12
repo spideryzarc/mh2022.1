@@ -5,10 +5,22 @@ import java.util.ArrayList;
  * Traveler Salesman Problem
  */
 public class TSP {
+    /**
+     * número de cidades
+     */
     public final int N;
+    /**
+     * matriz de custo/distância
+     */
     public final double c[][];
+    /**
+     * lista de coordenadas
+     */
     public final ArrayList<Point2D.Double> pontos = new ArrayList<>();
 
+    /**
+     * @param n - Número de cidades
+     */
     public TSP(int n) {
         N = n;
         c = new double[N][N];
@@ -35,7 +47,11 @@ public class TSP {
                 '}';
     }
 
-    public double cost(int[] v) {
+    /**
+     * @param v - uma sequência de cidades
+     * @return a soma das distâncias da sequência 'v'
+     */
+    public final double cost(int[] v) {
         double d = c[v[v.length - 1]][v[0]];
         for (int i = 1; i < v.length; i++) {
             d += c[v[i - 1]][v[i]];
