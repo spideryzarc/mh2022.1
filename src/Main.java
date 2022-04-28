@@ -8,7 +8,9 @@ public class Main {
         long t = System.currentTimeMillis();
         r.randomize();
         System.out.println(r);
-        while (r.replace_first_imp()) {//hill climbing
+        while (r.opt_2_first_imp()
+                || r.replace_first_imp()
+                || r.swap_2_best_imp()) {//hill climbing
             //nothing
         }
 

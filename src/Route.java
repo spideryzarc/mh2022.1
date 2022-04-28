@@ -155,9 +155,39 @@ public class Route {
             Utils.swap(v, arg_i, arg_j);
             cost += min_delta;
             assert Utils.equals(cost, tsp.cost(v)) : "variável 'cost' está inconsistente";
-//            System.out.println("swap " + cost);
+            System.out.println("swap " + cost);
             return true;
         }
+        return false;
+    }
+
+    public boolean opt_2_first_imp() {
+        final double c[][] = tsp.c;
+        for (int i = 0; i < tsp.N; i++) {
+            int lenj = (i == 0) ? tsp.N - 1 : tsp.N;
+            for (int j = i + 2; j < lenj; j++) {
+                //i j não podem ser adjacentes
+                int vi = v[i];
+                int p_vi = (i < tsp.N - 1) ? v[i + 1] : v[0];
+                int vj = v[j];
+                int p_vj = (j < tsp.N - 1) ? v[j + 1] : v[0];
+                double delta = c[vi][vj] + c[p_vi][p_vj]
+                        - c[vi][p_vi] - c[vj][p_vj];
+                if (delta < Utils.EPS) {
+                    for (int k = i + 1, h = j; k < h; k++, h--) {
+                        int aux = v[k];
+                        v[k] = v[h];
+                        v[h] = aux;
+                    }
+                    cost += delta;
+                    System.out.println("2opt " + cost);
+                    assert Utils.equals(cost, tsp.cost(v)) : "variável 'cost' está inconsistente";
+                    return true;
+                }
+            }
+        }
+
+
         return false;
     }
 
