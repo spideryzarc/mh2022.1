@@ -18,7 +18,9 @@ public class Route {
      */
     double cost;
 
-
+    /**
+     * @param tsp instância associada da rota
+     */
     public Route(TSP tsp) {
         this.tsp = tsp;
         v = new int[tsp.N];
@@ -138,6 +140,13 @@ public class Route {
         cost = tsp.cost(v);
     }
 
+    /**
+     * Vizinhança: Troca dois vertices de posição
+     * first_imp: pesquisa até encontrar o PRIMEIRO vizinho melhor e realiza a troca
+     * best_imp: pesquisa todos os vizinhos e realiza a MELHOR troca
+     *
+     * @return true - se e somente se uma troca foi realizada
+     */
     public boolean swap_2_best_imp() {
         double min_delta = 0;
         int arg_i = -1, arg_j = -1;
@@ -161,8 +170,18 @@ public class Route {
         return false;
     }
 
+
+    /**
+     * Vizinhança: (2 - optimum exchange) Troca duas arestas (i,pi),(j,pj)
+     * por (i,j),(pi,pj)
+     * first_imp: pesquisa até encontrar o PRIMEIRO vizinho melhor e realiza a troca
+     * best_imp: pesquisa todos os vizinhos e realiza a MELHOR troca
+     *
+     * @return true - se e somente se uma troca foi realizada
+     */
     public boolean opt_2_first_imp() {
         final double c[][] = tsp.c;
+        boolean imp = false;
         for (int i = 0; i < tsp.N; i++) {
             int lenj = (i == 0) ? tsp.N - 1 : tsp.N;
             for (int j = i + 2; j < lenj; j++) {
@@ -182,17 +201,71 @@ public class Route {
                     cost += delta;
                     System.out.println("2opt " + cost);
                     assert Utils.equals(cost, tsp.cost(v)) : "variável 'cost' está inconsistente";
-                    return true;
+                    imp = true;
+//                    return true;
                 }
             }
         }
+        return imp;
+    }
 
+    /**
+     * Vizinhança: (2 - optimum exchange) Troca duas arestas (i,pi),(j,pj)
+     * por (i,j),(pi,pj)
+     * first_imp: pesquisa até encontrar o PRIMEIRO vizinho melhor e realiza a troca
+     * best_imp: pesquisa todos os vizinhos e realiza a MELHOR troca
+     *
+     * @return true - se e somente se uma troca foi realizada
+     */
+    public boolean opt_2_best_imp() {
+        final double c[][] = tsp.c;
+        double min = -Utils.EPS;
+        int arg_i = -1, arg_j = -1;
+
+        for (int i = 0; i < tsp.N; i++) {
+            int lenj = (i == 0) ? tsp.N - 1 : tsp.N;
+            for (int j = i + 2; j < lenj; j++) {
+                //i j não podem ser adjacentes
+                int vi = v[i];
+                int p_vi = (i < tsp.N - 1) ? v[i + 1] : v[0];
+                int vj = v[j];
+                int p_vj = (j < tsp.N - 1) ? v[j + 1] : v[0];
+                double delta = c[vi][vj] + c[p_vi][p_vj]
+                        - c[vi][p_vi] - c[vj][p_vj];
+                if (delta < min) {
+                    min = delta;
+                    arg_i = i;
+                    arg_j = j;
+
+                }
+            }
+        }
+        if (arg_i != -1) {
+
+            for (int k = arg_i + 1, h = arg_j; k < h; k++, h--) {
+                int aux = v[k];
+                v[k] = v[h];
+                v[h] = aux;
+            }
+            cost += min;
+            System.out.println("2opt " + cost);
+            assert Utils.equals(cost, tsp.cost(v)) : "variável 'cost' está inconsistente";
+            return true;
+        }
 
         return false;
     }
 
+    /**
+     * Vizinhança: Desloca um vértice de posição na rota
+     * first_imp: pesquisa até encontrar o PRIMEIRO vizinho melhor e realiza a troca
+     * best_imp: pesquisa todos os vizinhos e realiza a MELHOR troca
+     *
+     * @return true - se e somente se uma troca foi realizada
+     */
     public boolean replace_first_imp() {
         final double c[][] = tsp.c;
+        boolean imp = false;
         for (int i = 0; i < tsp.N; i++) {
             int vi = v[i];
             int ant_vi = (i > 0) ? v[i - 1] : v[v.length - 1];
@@ -219,15 +292,79 @@ public class Route {
                     cost += delta;
                     assert Utils.equals(cost, tsp.cost(v)) : "variável 'cost' está inconsistente";
                     System.out.println("replace " + cost);
-                    return true;
+                    imp = true;
+                    break;//evita inconsistência na variável vi
+//                    return true;
                 }
             }
+        }
+
+        return imp;
+    }
+
+    /**
+     * Vizinhança: Desloca um vértice de posição na rota
+     * first_imp: pesquisa até encontrar o PRIMEIRO vizinho melhor e realiza a troca
+     * best_imp: pesquisa todos os vizinhos e realiza a MELHOR troca
+     *
+     * @return true - se e somente se uma troca foi realizada
+     */
+    public boolean replace_best_imp() {
+        final double c[][] = tsp.c;
+        double min = -Utils.EPS;
+        int arg_i = -1, arg_j = -1;
+        for (int i = 0; i < tsp.N; i++) {
+            int vi = v[i];
+            int ant_vi = (i > 0) ? v[i - 1] : v[v.length - 1];
+            int prx_vi = (i == v.length - 1) ? v[0] : v[i + 1];
+            double delta_rem = c[ant_vi][prx_vi] - c[ant_vi][vi] - c[vi][prx_vi];
+            for (int j = 0; j < tsp.N; j++) {
+                int vj = v[j];
+                if (ant_vi == vj || vj == vi)
+                    continue;
+
+                int prx_vj = (j == v.length - 1) ? v[0] : v[j + 1];
+
+                double delta = delta_rem + c[vj][vi] + c[vi][prx_vj] - c[vj][prx_vj];
+                if (delta < min) {
+                    min = delta;
+                    arg_i = i;
+                    arg_j = j;
+
+                }
+            }
+        }
+
+        if (arg_i != -1) {
+            int vi = v[arg_i];
+            int vj = v[arg_j];
+            if (arg_i < arg_j) {
+                for (int k = arg_i; k < arg_j; k++)
+                    v[k] = v[k + 1];
+                v[arg_j] = vi;
+            } else {
+                for (int k = arg_i; k > arg_j; k--)
+                    v[k] = v[k - 1];
+                v[arg_j + 1] = vi;
+            }
+            cost += min;
+            assert Utils.equals(cost, tsp.cost(v)) : "variável 'cost' está inconsistente";
+            System.out.println("replace " + cost);
+            return true;
         }
 
         return false;
     }
 
+    /**
+     * Vizinhança: Troca dois vertices de posição
+     * first_imp: pesquisa até encontrar o PRIMEIRO vizinho melhor e realiza a troca
+     * best_imp: pesquisa todos os vizinhos e realiza a MELHOR troca
+     *
+     * @return true se e somente se uma troca foi realizada
+     */
     public boolean swap_2_first_imp() {
+        boolean imp = false;
         for (int i = 1; i < tsp.N; i++)
             for (int j = 0; j < i; j++) {
                 double delta = getSwapDelta(i, j);
@@ -235,14 +372,20 @@ public class Route {
                     Utils.swap(v, i, j);
                     cost += delta;
                     assert Utils.equals(cost, tsp.cost(v)) : "variável 'cost' está inconsistente";
-//                    System.out.println("swap " + cost);
-                    return true;
+                    System.out.println("swap " + cost);
+                    imp = true;
+//                    return true;
+
                 }
             }
 
-        return false;
+        return imp;
     }
 
+    /**
+     * @return variação no custo da solução corrente se alternarmos, entre si,
+     * os vertices nas posições i,j
+     */
     private final double getSwapDelta(int i, int j) {
         final double[][] c = tsp.c;
         int vi = v[i];

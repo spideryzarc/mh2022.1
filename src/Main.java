@@ -6,13 +6,11 @@ public class Main {
         Route r = new Route(tsp);
 
         long t = System.currentTimeMillis();
-        r.randomize();
+        r.nearestNeighbor(0);
         System.out.println(r);
-        while (r.opt_2_first_imp()
-                || r.replace_first_imp()
-                || r.swap_2_best_imp()) {//hill climbing
-            //nothing
-        }
+        VND vnd = new VND(tsp);
+
+        vnd.run(r);
 
         t = System.currentTimeMillis() - t;
         System.out.println("time: " + t);

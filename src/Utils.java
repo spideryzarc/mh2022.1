@@ -46,8 +46,6 @@ public class Utils {
     }
 
     public static final double EPS = 0.001;
-
-
     public static boolean equals(double a, double b) {
         return Math.abs(a - b) < EPS;
     }
