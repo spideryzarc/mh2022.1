@@ -2,19 +2,17 @@ public class Main {
     public static void main(String args[]) {
         TSP tsp = new TSP(1000);
         tsp.randomize();
-        System.out.println(tsp);
-        Route r = new Route(tsp);
+
+        RMS rms = new RMS(tsp,60);
+        ILS ils = new ILS(tsp,60);
 
         long t = System.currentTimeMillis();
-        r.nearestNeighbor(0);
-        System.out.println(r);
-        VND vnd = new VND(tsp);
-
-        vnd.run(r);
-
+        ils.run();
         t = System.currentTimeMillis() - t;
+
         System.out.println("time: " + t);
 
+        Route r = ils.getBestSol();
         System.out.println(r);
         View.plot(r, "plot.csv");
         System.out.println(tsp.cost(r.v));

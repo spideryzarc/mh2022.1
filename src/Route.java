@@ -5,6 +5,9 @@ import java.util.Arrays;
  * Uma solução do TSP
  */
 public class Route {
+
+    public static final boolean trace = false;
+
     /**
      * A instância relacionada
      */
@@ -94,29 +97,29 @@ public class Route {
 
         for (int i = 0; i < n; i++)
             dist[i] = Math.min(tsp.c[arg_i][i], tsp.c[arg_j][i]);
-        int pivot = -1;
-        max = -1;
-        for (int i = 0; i < n; i++)
-            if (!visitado[i] && max < dist[i]) {
-                pivot = i;
-                max = dist[i];
-            }
-        if (pivot == -1)
-            return;
-        lista.add(pivot);
-        visitado[pivot] = true;
-        for (int k = 3; k < n; k++) {
-            for (int i = 0; i < n; i++)//atualiza distancia para rota parcial
-                if (!visitado[i])
-                    dist[i] = Math.min(dist[i], tsp.c[i][pivot]);
-
-            pivot = -1;
+//        int pivot = -1;
+//        max = -1;
+//        for (int i = 0; i < n; i++)
+//            if (!visitado[i] && max < dist[i]) {
+//                pivot = i;
+//                max = dist[i];
+//            }
+//        if (pivot == -1)
+//            return;
+//        lista.add(pivot);
+//        visitado[pivot] = true;
+        for (int k = 2; k < n; k++) {
+            int pivot = -1;
             max = -1;
             for (int i = 0; i < n; i++)
                 if (!visitado[i] && max < dist[i]) {
                     pivot = i;
                     max = dist[i];
                 }
+
+            for (int i = 0; i < n; i++)//atualiza distancia para rota parcial
+                if (!visitado[i])
+                    dist[i] = Math.min(dist[i], tsp.c[i][pivot]);
             //lista.add(pivot);
             //inserir na melhor posição
             double min = Double.POSITIVE_INFINITY;
@@ -164,7 +167,8 @@ public class Route {
             Utils.swap(v, arg_i, arg_j);
             cost += min_delta;
             assert Utils.equals(cost, tsp.cost(v)) : "variável 'cost' está inconsistente";
-            System.out.println("swap " + cost);
+            if (trace)
+                System.out.println("swap " + cost);
             return true;
         }
         return false;
@@ -199,7 +203,8 @@ public class Route {
                         v[h] = aux;
                     }
                     cost += delta;
-                    System.out.println("2opt " + cost);
+                    if (trace)
+                        System.out.println("2opt " + cost + toString());
                     assert Utils.equals(cost, tsp.cost(v)) : "variável 'cost' está inconsistente";
                     imp = true;
 //                    return true;
@@ -248,7 +253,8 @@ public class Route {
                 v[h] = aux;
             }
             cost += min;
-            System.out.println("2opt " + cost);
+            if (trace)
+                System.out.println("2opt " + cost);
             assert Utils.equals(cost, tsp.cost(v)) : "variável 'cost' está inconsistente";
             return true;
         }
@@ -291,7 +297,8 @@ public class Route {
                     }
                     cost += delta;
                     assert Utils.equals(cost, tsp.cost(v)) : "variável 'cost' está inconsistente";
-                    System.out.println("replace " + cost);
+                    if (trace)
+                        System.out.println("replace " + cost);
                     imp = true;
                     break;//evita inconsistência na variável vi
 //                    return true;
@@ -349,7 +356,8 @@ public class Route {
             }
             cost += min;
             assert Utils.equals(cost, tsp.cost(v)) : "variável 'cost' está inconsistente";
-            System.out.println("replace " + cost);
+            if (trace)
+                System.out.println("replace " + cost);
             return true;
         }
 
@@ -372,7 +380,8 @@ public class Route {
                     Utils.swap(v, i, j);
                     cost += delta;
                     assert Utils.equals(cost, tsp.cost(v)) : "variável 'cost' está inconsistente";
-                    System.out.println("swap " + cost);
+                    if (trace)
+                        System.out.println("swap " + cost);
                     imp = true;
 //                    return true;
 
@@ -411,4 +420,10 @@ public class Route {
         return delta;
     }
 
+
+    public void copy(Route src) {
+        assert this.tsp == src.tsp : "copia de soluções de instâncias diferentes";
+        cost = src.cost;
+        System.arraycopy(src.v, 0, v, 0, v.length);
+    }
 }

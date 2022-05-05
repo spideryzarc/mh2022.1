@@ -13,11 +13,12 @@ public class VND {
         while (imp) {
             imp = false;
             if (!imp)
+                imp = r.swap_2_first_imp();
+            if (!imp)
                 imp = r.opt_2_first_imp();
             if (!imp)
                 imp = r.replace_first_imp();
-            if (!imp)
-                imp = r.swap_2_first_imp();
+
         }
     }
 
