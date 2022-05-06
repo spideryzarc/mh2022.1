@@ -2,28 +2,24 @@ public class Main {
     public static void main(String args[]) {
         TSP tsp = new TSP(1000);
         tsp.randomize();
+        int ite = 60;
 
-        RMS rms = new RMS(tsp,60);
-        ILS ils = new ILS(tsp,60);
+        Solver solvers[] = new Solver[]{
+//                new RMS(tsp, ite),
+//                new ILS(tsp, ite),
+                new VNS(tsp,ite)
+        };
 
-        long t = System.currentTimeMillis();
-        ils.run();
-        t = System.currentTimeMillis() - t;
+        for (Solver s : solvers) {
+            s.run();
+        }
 
-        System.out.println("time: " + t);
+        for (Solver s : solvers) {
+            System.out.println(s);
+        }
 
-        Route r = ils.getBestSol();
-        System.out.println(r);
-        View.plot(r, "plot.csv");
-        System.out.println(tsp.cost(r.v));
-
-//        r.nearestNeighbor(5);
-//        System.out.println(r);
-//        View.plot(r,"plot.csv");
-//
-//        r.furtherInsertion();
-//        System.out.println(r);
-//        View.plot(r,"plot.csv");
+//        Route r = solvers.getBestSol();
+//        View.plot(r, "plot.csv");
 
     }
 }

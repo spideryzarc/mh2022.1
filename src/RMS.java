@@ -1,12 +1,27 @@
 /**
  * Random Multi-Start
  */
-public class RMS {
+public class RMS implements Solver {
     final TSP tsp;
     final int ite;
+    private int runTime;
 
     public Route getBestSol() {
         return bestSol;
+    }
+
+    @Override
+    public String toString() {
+        return "RMS{" +
+                "ite=" + ite +
+                ", runTime=" + runTime +
+                ", bestSol=" + bestSol.cost +
+                '}';
+    }
+
+    @Override
+    public int getRunTime() {
+        return runTime;
     }
 
     private Route bestSol;
@@ -17,6 +32,7 @@ public class RMS {
     }
 
     public void run() {
+        long t = System.currentTimeMillis();
         Route currentSol = new Route(tsp);
         bestSol = new Route(tsp);
         bestSol.cost = Double.POSITIVE_INFINITY;
@@ -30,5 +46,6 @@ public class RMS {
                 assert Utils.equals(bestSol.cost, tsp.cost(bestSol.v)) : "variável 'cost' está inconsistente";
             }
         }
+        runTime = (int) (System.currentTimeMillis() - t);
     }
 }

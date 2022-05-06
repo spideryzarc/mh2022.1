@@ -1,15 +1,30 @@
 /**
  * Iterated Local Search
  */
-public class ILS {
+public class ILS implements Solver {
     final TSP tsp;
     final int ite;
+    private int runTime;
 
     public Route getBestSol() {
         return bestSol;
     }
 
+    @Override
+    public int getRunTime() {
+        return runTime;
+    }
+
     private Route bestSol;
+
+    @Override
+    public String toString() {
+        return "ILS{" +
+                "ite=" + ite +
+                ", runTime=" + runTime +
+                ", bestSol=" + bestSol.cost +
+                '}';
+    }
 
     public ILS(TSP tsp, int ite) {
         this.ite = ite;
@@ -36,15 +51,14 @@ public class ILS {
     }
 
     public void run() {
+        long t = System.currentTimeMillis();
         Route currentSol = new Route(tsp);
         currentSol.randomize();
         bestSol = new Route(tsp);
         bestSol.copy(currentSol);
         VND vnd = new VND(tsp);
         for (int i = 0; i < ite; i++) {
-
             shake(currentSol);
-
             vnd.run(currentSol);
             if (currentSol.cost < bestSol.cost - Utils.EPS) {
                 bestSol.copy(currentSol);
@@ -52,5 +66,6 @@ public class ILS {
                 assert Utils.equals(bestSol.cost, tsp.cost(bestSol.v)) : "variável 'cost' está inconsistente";
             }
         }
+        runTime = (int) (System.currentTimeMillis() - t);
     }
 }

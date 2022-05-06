@@ -122,9 +122,12 @@ public class Route {
                     dist[i] = Math.min(dist[i], tsp.c[i][pivot]);
             //lista.add(pivot);
             //inserir na melhor posição
-            double min = Double.POSITIVE_INFINITY;
-            arg_i = -1;
-            for (int i = 1; i < lista.size(); i++)
+            double min = tsp.c[lista.get(lista.size()-1)][pivot]
+                    + tsp.c[pivot][lista.get(0)]
+                    - tsp.c[lista.get(lista.size()-1)][lista.get(0)];
+            arg_i = 0;
+            for (int i = 1; i < lista.size(); i++) {
+
                 if (min > tsp.c[lista.get(i - 1)][pivot]
                         + tsp.c[pivot][lista.get(i)]
                         - tsp.c[lista.get(i - 1)][lista.get(i)]) {
@@ -133,6 +136,7 @@ public class Route {
                             + tsp.c[pivot][lista.get(i)]
                             - tsp.c[lista.get(i - 1)][lista.get(i)];
                 }
+            }
             lista.add(arg_i, pivot);
             visitado[pivot] = true;
         }

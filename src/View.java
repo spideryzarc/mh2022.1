@@ -42,7 +42,7 @@ public class View {
         int i = 0;
         for (Point2D.Double s : rt.tsp.pontos) {
             svg.add(new Circle(s.x, s.y, r, ""));
-            //svg.add(new Text(s.x, s.y, "", "" + i));
+//            svg.add(new Text(s.x, s.y, "", "" + i));
             i++;
         }
 
