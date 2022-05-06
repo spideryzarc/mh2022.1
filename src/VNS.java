@@ -108,10 +108,15 @@ public class VNS implements Solver {
                 j++;
             }
         }
-        for (int i = 0; i < v.length - k; i++)
-            v[i] = aux[i];
-        for (int i = v.length - k, j = 0; i < v.length; i++, j++) {
-            v[i] = lista.get(j);
+//        for (int i = 0; i < v.length - k; i++)
+//            v[i] = aux[i];
+//        for (int i = v.length - k, j = 0; i < v.length; i++, j++) {
+//            v[i] = lista.get(j);
+//        }
+        for (int i = 0; i <  k; i++)
+            v[i] = lista.get(i);
+        for (int i = k, j = 0; i < v.length; i++, j++) {
+            v[i] = aux[j];
         }
         currentSol.cost = tsp.cost(v);
     }
