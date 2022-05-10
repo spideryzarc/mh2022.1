@@ -7,7 +7,8 @@ public class Main {
         Solver solvers[] = new Solver[]{
 //                new RMS(tsp, ite),
 //                new ILS(tsp, ite),
-                new VNS(tsp,ite)
+                new VNS(tsp,ite),
+//                new GRASP(tsp, ite, 3)
         };
 
         for (Solver s : solvers) {
