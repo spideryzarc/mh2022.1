@@ -53,7 +53,7 @@ public class ILS implements Solver {
     public void run() {
         long t = System.currentTimeMillis();
         Route currentSol = new Route(tsp);
-        currentSol.randomize();
+        currentSol.furtherInsertion();
         bestSol = new Route(tsp);
         bestSol.copy(currentSol);
         VND vnd = new VND(tsp);

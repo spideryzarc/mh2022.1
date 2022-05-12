@@ -53,7 +53,7 @@ public class View {
         }
 
         try {
-            svg.save("test.svg");
+            svg.save(outFile);
         } catch (IOException e) {
             e.printStackTrace();
         }

@@ -45,7 +45,23 @@ public class Utils {
 
     }
 
+    public static int roulette(double weight[]) {
+        double acc[] = new double[weight.length];
+        acc[0] = weight[0];
+        for (int i = 1; i < acc.length; i++)
+            acc[i] = acc[i - 1] + weight[i];
+        double x = rd.nextDouble() * acc[acc.length - 1];
+        if (x < acc[0])
+            return 0;
+        for (int i = 1; i < acc.length; i++)
+            if (x < acc[i]) // implícito && x >= acc[i - 1]
+                return i;
+
+        return -1;
+    }
+
     public static final double EPS = 0.001;
+
     public static boolean equals(double a, double b) {
         return Math.abs(a - b) < EPS;
     }

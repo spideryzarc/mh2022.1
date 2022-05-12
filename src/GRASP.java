@@ -1,3 +1,4 @@
+import java.util.Arrays;
 import java.util.PriorityQueue;
 
 /**
@@ -7,6 +8,7 @@ public class GRASP implements Solver {
     final TSP tsp;
     final int ite;
     final int k;
+    final boolean useRolette;
     private int runTime;
 
     public Route getBestSol() {
@@ -17,7 +19,7 @@ public class GRASP implements Solver {
     public String toString() {
         return "GRASP{" +
                 "ite=" + ite +
-                "k = " + k +
+                ", k = " + k +
                 ", runTime=" + runTime +
                 ", bestSol=" + bestSol.cost +
                 '}';
@@ -30,10 +32,12 @@ public class GRASP implements Solver {
 
     private Route bestSol;
 
-    public GRASP(TSP tsp, int ite, int k) {
+    public GRASP(TSP tsp, int ite, int k, boolean useRolette) {
         this.ite = ite;
         this.tsp = tsp;
         this.k = k;
+        this.useRolette = useRolette;
+        w = new double[k];
     }
 
     public void run() {
@@ -56,6 +60,8 @@ public class GRASP implements Solver {
 
     private PriorityQueue<Candidate> fila = new PriorityQueue<>();
 
+    private double w[];
+
     private void greedyRandom(Route currentSol) {
         int v[] = currentSol.v;
         boolean[] visitado = new boolean[tsp.N];
@@ -73,8 +79,20 @@ public class GRASP implements Solver {
                     }
                 }
 
-            int x = Utils.rd.nextInt(fila.size());
-            arg_j = ((Candidate) fila.toArray()[x]).id;
+            if (useRolette) {
+                //sorteio por peso
+                Object lista[] = fila.toArray();
+                Arrays.fill(w, 0);
+                for (int j = 0; j < lista.length; j++)
+                    w[j] = 1 / ((Candidate) lista[j]).score;
+                int x = Utils.roulette(w);
+                arg_j = ((Candidate) lista[x]).id;
+            } else {
+                // sorteio uniforme
+                int x = Utils.rd.nextInt(fila.size());
+                arg_j = ((Candidate) fila.toArray()[x]).id;
+            }
+
 
             v[i] = arg_j;
             visitado[arg_j] = true;
