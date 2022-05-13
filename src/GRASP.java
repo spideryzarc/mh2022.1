@@ -97,7 +97,7 @@ public class GRASP implements Solver {
             v[i] = arg_j;
             visitado[arg_j] = true;
         }
-        Utils.roll(v);
+        Utils.rollZero(v);
         currentSol.cost = tsp.cost(v);
     }
 

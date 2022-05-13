@@ -5,7 +5,16 @@ import java.util.ArrayList;
  */
 public class VNS implements Solver {
     final TSP tsp;
+
+    /**
+     * número de iterações
+     */
     final int ite;
+
+
+    /**
+     * tempo da última execução em milissegundos
+     */
     private int runTime;
 
     public Route getBestSol() {
@@ -112,7 +121,7 @@ public class VNS implements Solver {
                 assert Utils.equals(bestSol.cost, tsp.cost(bestSol.v)) : "variável 'cost' está inconsistente";
                 cont_stuck = 0;
                 neigh = 0;
-                View.plot(bestSol, "plot.csv");
+//                View.plot(bestSol, "plot.csv");
             }
             if (cont_stuck >= limite) {
                 neigh++;

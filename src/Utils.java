@@ -16,6 +16,10 @@ public class Utils {
         v[j] = aux;
     }
 
+    /**
+     * Embaralha um vetor
+     * @param v vetor que será embaralhado
+     */
     public static void shuffler(int v[]) {
         for (int i = v.length - 1; i > 0; i--) {
             int x = Utils.rd.nextInt(i);
@@ -26,7 +30,12 @@ public class Utils {
         }
     }
 
-    public static void roll(int v[]) {
+    /**
+     * Altera um vetor v de forma circula de modo que o zero seja o valor de v[0]
+     * @param v vetor com um zero
+     * @throws IllegalArgumentException se o vetor não possui um zero
+     */
+    public static void rollZero(int v[]) {
         if (v[0] == 0)
             return;
         int p = -1;
@@ -35,9 +44,9 @@ public class Utils {
                 p = i;
                 break;
             }
+
         if (p == -1) {
-            System.err.println("OPS! Roll de um vetor sem zero");
-            return;
+            throw new IllegalArgumentException("O vetor não possui um zero");
         }
         int a[] = v.clone();
         for (int i = 0; i < v.length; i++)

@@ -45,7 +45,7 @@ public class Route {
         for (int i = 0; i < tsp.N; i++)
             v[i] = i;
         Utils.shuffler(v);
-        Utils.roll(v);
+        Utils.rollZero(v);
         cost = tsp.cost(v);
     }
 
@@ -69,17 +69,20 @@ public class Route {
             v[i] = arg_j;
             visitado[arg_j] = true;
         }
-        Utils.roll(v);
+        Utils.rollZero(v);
         cost = tsp.cost(v);
     }
 
     /**
+     * Heurística construtiva gulosa Inserção do mais distante
      * Constroi uma solução com o algoritmo da inserção do mais distante
      */
     public void furtherInsertion() {
         final int n = tsp.N;
         int arg_i = -1, arg_j = -1;
         double max = -1;
+
+        //selecionar os dois mais distantes entre si
         for (int i = 1; i < n; i++)
             for (int j = 0; j < i; j++)
                 if (max < tsp.c[i][j]) {
@@ -87,63 +90,65 @@ public class Route {
                     arg_i = i;
                     arg_j = j;
                 }
-        ArrayList<Integer> lista = new ArrayList<>();
-        lista.add(arg_i);
-        lista.add(arg_j);
+
+        //rota parcial
+        ArrayList<Integer> rota = new ArrayList<>();
+
+        //inserir os dois mais distantes na rota parcial
+        rota.add(arg_i);
+        rota.add(arg_j);
+
+        // se um vértice está na rota parcial
         boolean[] visitado = new boolean[n];
         visitado[arg_i] = visitado[arg_j] = true;
-        /**distância minima para rota parcial*/
-        double dist[] = new double[n];
 
+        // distância minima para rota parcial
+        double dist[] = new double[n];
         for (int i = 0; i < n; i++)
             dist[i] = Math.min(tsp.c[arg_i][i], tsp.c[arg_j][i]);
-//        int pivot = -1;
-//        max = -1;
-//        for (int i = 0; i < n; i++)
-//            if (!visitado[i] && max < dist[i]) {
-//                pivot = i;
-//                max = dist[i];
-//            }
-//        if (pivot == -1)
-//            return;
-//        lista.add(pivot);
-//        visitado[pivot] = true;
+
+
         for (int k = 2; k < n; k++) {
+            //vértice que será inserido na rota
             int pivot = -1;
             max = -1;
+            //seleciona pivot como o vértice mais distante da rota
             for (int i = 0; i < n; i++)
                 if (!visitado[i] && max < dist[i]) {
                     pivot = i;
                     max = dist[i];
                 }
 
-            for (int i = 0; i < n; i++)//atualiza distancia para rota parcial
-                if (!visitado[i])
-                    dist[i] = Math.min(dist[i], tsp.c[i][pivot]);
-            //lista.add(pivot);
-            //inserir na melhor posição
-            double min = tsp.c[lista.get(lista.size()-1)][pivot]
-                    + tsp.c[pivot][lista.get(0)]
-                    - tsp.c[lista.get(lista.size()-1)][lista.get(0)];
-            arg_i = 0;
-            for (int i = 1; i < lista.size(); i++) {
+            //atualiza distância para rota parcial
+            for (int i = 0; i < n; i++)
+                if (!visitado[i] && dist[i] > tsp.c[i][pivot])
+                    dist[i] = tsp.c[i][pivot];
 
-                if (min > tsp.c[lista.get(i - 1)][pivot]
-                        + tsp.c[pivot][lista.get(i)]
-                        - tsp.c[lista.get(i - 1)][lista.get(i)]) {
+            //inserir pivot na melhor posição da rota
+            arg_i = 0; // inserir na primeira posição
+            // (0,... , size-1) => ( pivot, 0, ..., size-1)
+            double min = tsp.c[rota.get(rota.size() - 1)][pivot]
+                    + tsp.c[pivot][rota.get(0)]
+                    - tsp.c[rota.get(rota.size() - 1)][rota.get(0)];
+            for (int i = 1; i < rota.size(); i++) {
+                //  (... i-1, i, ...)  =>  (... i-1, pivot, i ...)
+                if (min > tsp.c[rota.get(i - 1)][pivot]
+                        + tsp.c[pivot][rota.get(i)]
+                        - tsp.c[rota.get(i - 1)][rota.get(i)]) {
                     arg_i = i;
-                    min = tsp.c[lista.get(i - 1)][pivot]
-                            + tsp.c[pivot][lista.get(i)]
-                            - tsp.c[lista.get(i - 1)][lista.get(i)];
+                    min = tsp.c[rota.get(i - 1)][pivot]
+                            + tsp.c[pivot][rota.get(i)]
+                            - tsp.c[rota.get(i - 1)][rota.get(i)];
                 }
             }
-            lista.add(arg_i, pivot);
+            rota.add(arg_i, pivot);
             visitado[pivot] = true;
         }
-        for (int i = 0; i < n; i++)
-            v[i] = lista.get(i);
 
-        Utils.roll(v);
+        for (int i = 0; i < n; i++)
+            v[i] = rota.get(i);
+
+        Utils.rollZero(v);
         cost = tsp.cost(v);
     }
 
