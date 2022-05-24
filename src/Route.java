@@ -1,5 +1,7 @@
+import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 
 /**
  * Uma solução do TSP
@@ -429,10 +431,107 @@ public class Route {
         return delta;
     }
 
+    /**
+     * Algoritmo paralelo de Clark and Write 'saving' para construção de soluções
+     *
+     * @param vc vértice de origem do 'saving'
+     */
+    public void CW(int vc) {
+        final int n = tsp.N;
+        final double c[][] = tsp.c;
+        double s[][] = new double[n][n];
+
+        //seleciona o vértice mais próximo do centro
+//        double sx = 0, sy = 0;
+//        for (Point2D.Double p : tsp.pontos) {
+//            sx+=p.x;
+//            sy+=p.y;
+//        }
+//        sx/= tsp.N;
+//        sy/= tsp.N;
+//        double min = Double.POSITIVE_INFINITY;
+//        for (int i = 0; i < tsp.N; i++) {
+//            double d = tsp.pontos.get(i).distance(sx,sy);
+//            if(d < min){
+//                min = d;
+//                vc = i;
+//            }
+//        }
+
+        for (int i = 1; i < n; i++)
+            for (int j = 0; j < i; j++)
+                s[i][j] = s[j][i] = c[vc][i] + c[vc][j] - c[i][j];
+        ArrayList<ArrayList<Integer>> routes = new ArrayList<>();
+        for (int i = 0; i < n; i++)
+            if (i != vc) {
+                ArrayList<Integer> r = new ArrayList<>();
+                r.add(i);
+                routes.add(r);
+            }
+
+        while (routes.size() > 1) {
+            double max = 0;
+            int arg_i = -1, arg_j = -1;
+            for (int i = 0; i < routes.size(); i++)
+                for (int j = 0; j < routes.size(); j++)
+                    if (i != j) {
+                        double d = s[routes.get(i).get(routes.get(i).size() - 1)][routes.get(j).get(0)];
+                        if (max < d) {
+                            arg_i = i;
+                            arg_j = j;
+                            max = d;
+
+                        }
+                        d = s[routes.get(i).get(routes.get(i).size() - 1)][routes.get(j).get(routes.get(j).size() - 1)];
+                        if (max < d) {
+                            arg_i = i;
+                            arg_j = -j;// rota j deve ser invertida
+                            max = d;
+
+                        }
+                    }
+            if (arg_j < 0) {
+                arg_j *= -1;
+                Collections.reverse(routes.get(arg_j));
+            }
+            routes.get(arg_i).addAll(routes.get(arg_j));
+            routes.remove(arg_j);
+
+        }
+        ArrayList<Integer> r = routes.get(0);
+        r.add(vc);
+        for (int i = 0; i < n; i++)
+            v[i] = r.get(i);
+        Utils.rollZero(v);
+        cost = tsp.cost(v);
+    }
+
 
     public void copy(Route src) {
         assert this.tsp == src.tsp : "copia de soluções de instâncias diferentes";
         cost = src.cost;
         System.arraycopy(src.v, 0, v, 0, v.length);
+    }
+
+    /**
+     * Gerador de solução inicial padrão
+     */
+    public void defaultSolConstructor() {
+        furtherInsertion();
+//        System.out.println("FI defaultSC " + cost);
+//        Route r = new Route(tsp);
+//        r.CW(0);
+//        if (r.cost < this.cost) {
+//            this.copy(r);
+//            System.out.println("CW defaultSC " + r.cost);
+//        }
+//        for (int i = 0; i < tsp.N; i++) {
+//            r.nearestNeighbor(i);
+//            if (r.cost < this.cost) {
+//                this.copy(r);
+//                System.out.println(i+" defaultSC "+r.cost);
+//            }
+//        }
+
     }
 }

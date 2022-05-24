@@ -53,13 +53,17 @@ public class ILS implements Solver {
     public void run() {
         long t = System.currentTimeMillis();
         Route currentSol = new Route(tsp);
-        currentSol.furtherInsertion();
+        currentSol.defaultSolConstructor();
+        VND vnd = new VND(tsp);
+        vnd.run(currentSol);
         bestSol = new Route(tsp);
         bestSol.copy(currentSol);
-        VND vnd = new VND(tsp);
         for (int i = 0; i < ite; i++) {
             shake(currentSol);
             vnd.run(currentSol);
+//            vnd.run(()->currentSol.opt_2_best_imp(),
+//                    ()->currentSol.swap_2_first_imp(),
+//                    ()->currentSol.replace_first_imp());
             if (currentSol.cost < bestSol.cost - Utils.EPS) {
                 bestSol.copy(currentSol);
                 System.out.println(i + " ILS " + bestSol.cost);

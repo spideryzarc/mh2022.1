@@ -8,7 +8,8 @@ public class Main {
 //                new RMS(tsp, ite),
 //                new ILS(tsp, ite),
 //                new VNS(tsp, ite),
-                new GRASP(tsp, ite, 10, true)
+//                new GRASP(tsp, ite, 10, true),
+                new SA(tsp, ite, .01, .01)
         };
 
         for (Solver s : solvers) {

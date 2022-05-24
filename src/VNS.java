@@ -92,10 +92,11 @@ public class VNS implements Solver {
     public void run() {
         long t = System.currentTimeMillis();
         Route currentSol = new Route(tsp);
-        currentSol.furtherInsertion();
+        currentSol.defaultSolConstructor();
+        VND vnd = new VND(tsp);
+        vnd.run(currentSol);
         bestSol = new Route(tsp);
         bestSol.copy(currentSol);
-        VND vnd = new VND(tsp);
 
         int cont_stuck = 0;// número de iterações desde o último melhoramento
         final int limite = ite / 10; // máximo de cont_stuck antes de trocar a vizinhança
