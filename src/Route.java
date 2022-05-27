@@ -207,7 +207,7 @@ public class Route {
                 int p_vj = (j < tsp.N - 1) ? v[j + 1] : v[0];
                 double delta = c[vi][vj] + c[p_vi][p_vj]
                         - c[vi][p_vi] - c[vj][p_vj];
-                if (delta < Utils.EPS) {
+                if (delta < -Utils.EPS) {
                     for (int k = i + 1, h = j; k < h; k++, h--) {
                         int aux = v[k];
                         v[k] = v[h];
