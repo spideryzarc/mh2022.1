@@ -86,6 +86,11 @@ public class SA implements Solver {
         runTime = (int) (System.currentTimeMillis() - t);
     }
 
+    /** distribuição de Bolzman-Gibbs
+     * @param delta variação na função de avaliação (tem que ser maior q zero)
+     * @param t temperatura do sistema
+     * @return
+     */
     private double P(double delta, double t) {
         return 1 / Math.exp(delta / t);
     }

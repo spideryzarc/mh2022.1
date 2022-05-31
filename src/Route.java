@@ -406,7 +406,7 @@ public class Route {
      * @return variação no custo da solução corrente se alternarmos, entre si,
      * os vertices nas posições i,j
      */
-    private final double getSwapDelta(int i, int j) {
+    public final double getSwapDelta(int i, int j) {
         final double[][] c = tsp.c;
         int vi = v[i];
         int vj = v[j];
