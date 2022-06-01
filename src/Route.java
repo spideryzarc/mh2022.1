@@ -320,6 +320,7 @@ public class Route {
         return imp;
     }
 
+
     /**
      * Vizinhança: Desloca um vértice de posição na rota
      * first_imp: pesquisa até encontrar o PRIMEIRO vizinho melhor e realiza a troca

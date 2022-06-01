@@ -9,6 +9,7 @@ public class SA implements Solver {
     final double s_ref, p0, pf;
     private int runTime;
     private VND vnd;
+    private Disturbances dist;
 
     public Route getBestSol() {
         return bestSol;
@@ -32,7 +33,6 @@ public class SA implements Solver {
     }
 
     private Route bestSol;
-    private int[] aux;
 
     /**
      * @param tsp   instância do tsp
@@ -48,7 +48,7 @@ public class SA implements Solver {
         this.p0 = p0;
         this.pf = pf;
         vnd = new VND(tsp);
-        aux = new int[tsp.N];
+        dist = new Disturbances(tsp);
     }
 
 
@@ -64,7 +64,9 @@ public class SA implements Solver {
         double lambda = Math.pow(Tf / T0, 1.0 / ite);
         for (double temp = T0; temp > Tf; temp *= lambda) {
             tmp.copy(currentSol);
-            shake(tmp);
+//            dist.moveRandomToBegin(tmp,2,(int)(2+ temp*tsp.N/1000)); //funciona bem para instancia de 1000
+            dist.moveRandomToBegin(tmp,2,2+ tsp.N/10);
+            vnd.run(tmp);
             if (tmp.cost < currentSol.cost) {
                 currentSol.copy(tmp);
 
@@ -95,22 +97,6 @@ public class SA implements Solver {
         return 1 / Math.exp(delta / t);
     }
 
-    private void shake(Route r) {
-        int v[] = r.v;
-        int size = Math.min(2 + Utils.rd.nextInt(v.length / 10), 50);
-        int ini = Utils.rd.nextInt(v.length - size);
 
-        for (int i = size - 1; i > 0; i--) {
-            int x = Utils.rd.nextInt(i);
-            int id = ini + i;
-            int xd = ini + x;
-            //swap
-            int aux = v[id];
-            v[id] = v[xd];
-            v[xd] = aux;
-        }
-        r.cost = tsp.cost(r.v);
-        vnd.run(r);
-    }
 
 }
