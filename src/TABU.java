@@ -51,6 +51,16 @@ public class TABU implements Solver {
 
     }
 
+    @Override
+    public String toString() {
+        return "TABU{" +
+                "tenure=" + tenure +
+                ", ite=" + ite +
+                ", runTime=" + runTime +
+                ", bestSol=" + bestSol.cost +
+                '}';
+    }
+
     public void run() {
         long t = System.currentTimeMillis();
         Route currentSol = new Route(tsp);
@@ -64,7 +74,7 @@ public class TABU implements Solver {
         listaTabu.add(Arrays.hashCode(currentSol.v));
 
         for (int i = 0; i < ite; i++) {
-            dist.moveWindowsToEnd(currentSol,2,2+tsp.N/100);
+            dist.moveRandomToBegin(currentSol, 2, 5);
             vnd.run(currentSol);
 
             listaTabu.add(Arrays.hashCode(currentSol.v));
@@ -80,17 +90,20 @@ public class TABU implements Solver {
         runTime = (int) (System.currentTimeMillis() - t);
     }
 
-    private boolean isTabu(int v[]){
+    private boolean isTabu(int v[]) {
         return listaTabu.contains(Arrays.hashCode(v));
     }
+
     /**
      * Variable Neighborhood Descendant -- adaptado para o tabu
      */
     public class VND {
         final TSP tsp;
+        private int v_aux[];
 
         public VND(TSP tsp) {
             this.tsp = tsp;
+            v_aux = new int[tsp.N];
         }
 
         public void run(Route r) {
@@ -118,7 +131,7 @@ public class TABU implements Solver {
                     double delta = r.getSwapDelta(i, j);
                     if (delta < -0.001) {
                         Utils.swap(r.v, i, j);
-                        if(isTabu(r.v)){
+                        if (isTabu(r.v)) {
                             System.out.println("tabu1");
                             Utils.swap(r.v, i, j);
                             continue;
@@ -160,7 +173,7 @@ public class TABU implements Solver {
                             r.v[k] = r.v[h];
                             r.v[h] = aux;
                         }
-                        if(isTabu(r.v)){
+                        if (isTabu(r.v)) {
                             System.out.println("tabu2");
                             for (int k = i + 1, h = j; k < h; k++, h--) {
                                 int aux = r.v[k];
@@ -205,6 +218,8 @@ public class TABU implements Solver {
 
                     double delta = delta_rem + c[vj][vi] + c[vi][prx_vj] - c[vj][prx_vj];
                     if (delta < -0.001) {
+
+                        System.arraycopy(r.v, 0, v_aux, 0, v_aux.length);
                         if (i < j) {
                             for (int k = i; k < j; k++)
                                 v[k] = v[k + 1];
@@ -214,10 +229,10 @@ public class TABU implements Solver {
                                 v[k] = v[k - 1];
                             v[j + 1] = vi;
                         }
-                        if(isTabu(v)){
-                            //TODO
+                        if (isTabu(v)) {
+                            System.arraycopy(v_aux, 0, r.v, 0, v_aux.length);
                             System.out.println("tabu3");
-//                            continue;
+                            continue;
                         }
                         r.cost += delta;
                         assert Utils.equals(r.cost, tsp.cost(v)) : "variável 'cost' está inconsistente";
