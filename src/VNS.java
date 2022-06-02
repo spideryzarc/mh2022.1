@@ -115,13 +115,13 @@ public class VNS implements Solver {
                     dist.moveWindowsToEnd(currentSol,2,2+tsp.N/50);
                     break;
                 case 3:
-                    dist.moveRandomToBegin(currentSol,2,2+tsp.N/10);
+                    dist.moveRandomToBegin(currentSol,2+tsp.N/50,2+tsp.N/10);
                     break;
                 case 4:
-                    dist.shufflerWindows(currentSol,2,2+tsp.N/10);
+                    dist.shufflerWindows(currentSol,2+tsp.N/50,2+tsp.N/10);
                     break;
                 default:
-                    dist.moveWindowsToEnd(currentSol,2,2+tsp.N/10);
+                    dist.moveWindowsToEnd(currentSol,2+tsp.N/50,2+tsp.N/10);
             }
             vnd.run(currentSol);
             if (currentSol.cost < bestSol.cost - Utils.EPS) {

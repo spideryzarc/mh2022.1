@@ -10,7 +10,8 @@ public class Main {
 //                new VNS(tsp, ite),
 //                new GRASP(tsp, ite, 10, true),
 //                new SA(tsp, ite, 0.1e-2, 10e-2, .0001e-2),
-                new TABU(tsp, ite, 100)
+//                new TABU(tsp, ite, 100),
+                new GLS(tsp,ite)
         };
 
         for (Solver s : solvers) {

@@ -60,11 +60,11 @@ public class Disturbances {
 
     /** Seleciona k vértice e os move para o início da rota
      * @param r rota a ser perturbada
-     * @param min_k menor valor para k , (>=2)
+     * @param min_k menor valor para k , (>=1)
      * @param max_k maior valor para k , (< r.tsp.N)
      */
     public void moveRandomToBegin(Route r, int min_k, int max_k) {
-        assert ( min_k >= 2 && max_k < r.tsp.N && min_k<=max_k): "Valores inconsistentes para k";
+        assert ( min_k >= 1 && max_k < r.tsp.N && min_k<=max_k): "Valores inconsistentes para k";
         int v[] = r.v;
         int size = min_k+ Utils.rd.nextInt(max_k-min_k+1);
 

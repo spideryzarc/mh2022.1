@@ -35,22 +35,6 @@ public class TABU implements Solver {
     private Route bestSol;
 
 
-    private void shake(Route r) {
-        int v[] = r.v;
-        System.arraycopy(v, 0, aux, 0, aux.length);
-        int size = 3;//2 + Utils.rd.nextInt(v.length / 2);
-        int ini = Utils.rd.nextInt(v.length - size);
-
-        int i = ini;
-        for (int j = ini + size; j < v.length; i++, j++)
-            v[i] = aux[j];
-        for (int j = ini; i < v.length; i++, j++)
-            v[i] = aux[j];
-
-        r.cost = tsp.cost(r.v);
-
-    }
-
     @Override
     public String toString() {
         return "TABU{" +
@@ -74,7 +58,9 @@ public class TABU implements Solver {
         listaTabu.add(Arrays.hashCode(currentSol.v));
 
         for (int i = 0; i < ite; i++) {
-            dist.moveRandomToBegin(currentSol, 2, 5);
+            dist.moveRandomToBegin(currentSol, 1, 2);
+//            dist.shufflerWindows(currentSol, 2, 100);
+//            dist.moveWindowsToEnd(currentSol, 2, 10);
             vnd.run(currentSol);
 
             listaTabu.add(Arrays.hashCode(currentSol.v));
@@ -115,6 +101,7 @@ public class TABU implements Solver {
                 if (!imp)
                     imp = replace_first_imp(r);
             }
+            Utils.rollZero(r.v);
         }
 
         /**
