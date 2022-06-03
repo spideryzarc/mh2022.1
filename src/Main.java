@@ -2,16 +2,16 @@ public class Main {
     public static void main(String args[]) {
         TSP tsp = new TSP(1000);
         tsp.randomize();
-        int ite = 100;
+        int ite = 1000;
 
         Solver solvers[] = new Solver[]{
 //                new RMS(tsp, ite),
 //                new ILS(tsp, ite, tsp.N/50),
 //                new VNS(tsp, ite),
-//                new GRASP(tsp, ite, 10, true),
+//                new GRASP(tsp, ite, 5, true),
 //                new SA(tsp, ite, 0.1e-2, 10e-2, .0001e-2),
 //                new TABU(tsp, ite, 100),
-                new GLS(tsp,ite)
+                new GLS(tsp,ite,0.1,0.2)
         };
 
         for (Solver s : solvers) {

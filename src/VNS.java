@@ -38,6 +38,7 @@ public class VNS implements Solver {
     }
 
     private Disturbances dist;
+
     public VNS(TSP tsp, int ite) {
         this.ite = ite;
         this.tsp = tsp;
@@ -101,27 +102,27 @@ public class VNS implements Solver {
         bestSol.copy(currentSol);
 
         int cont_stuck = 0;// número de iterações desde o último melhoramento
-        final int limite = ite / 20; // máximo de cont_stuck antes de trocar a vizinhança
+        final int limite = ite / 10; // máximo de cont_stuck antes de trocar a vizinhança
         int neigh = 0; // vizinhança da pertubação atual
         for (int i = 0; i < ite; i++, cont_stuck++) {
             switch (neigh) {
                 case 0:
-                    dist.moveRandomToBegin(currentSol,2,2+tsp.N/50);
-                    break;
-                case 1:
-                    dist.shufflerWindows(currentSol,2,2+tsp.N/50);
+                    dist.moveRandomToBegin(currentSol, 1, 1 + tsp.N / 100);
                     break;
                 case 2:
-                    dist.moveWindowsToEnd(currentSol,2,2+tsp.N/50);
+                    dist.shufflerWindows(currentSol, 3, 3 + tsp.N / 100);
+                    break;
+                case 1:
+                    dist.moveWindowsToEnd(currentSol, 2, 2 + tsp.N / 100);
                     break;
                 case 3:
-                    dist.moveRandomToBegin(currentSol,2+tsp.N/50,2+tsp.N/10);
+                    dist.moveRandomToBegin(currentSol, 1, 1 + tsp.N / 10);
                     break;
                 case 4:
-                    dist.shufflerWindows(currentSol,2+tsp.N/50,2+tsp.N/10);
+                    dist.shufflerWindows(currentSol, 2, 2 + tsp.N / 10);
                     break;
                 default:
-                    dist.moveWindowsToEnd(currentSol,2+tsp.N/50,2+tsp.N/10);
+                    dist.moveWindowsToEnd(currentSol, 2, 2 + tsp.N / 10);
             }
             vnd.run(currentSol);
             if (currentSol.cost < bestSol.cost - Utils.EPS) {
@@ -130,13 +131,12 @@ public class VNS implements Solver {
                 assert Utils.equals(bestSol.cost, tsp.cost(bestSol.v)) : "variável 'cost' está inconsistente";
                 cont_stuck = 0;
                 neigh = 0;
-//                View.plot(bestSol, "plot.csv");
             }
             if (cont_stuck >= limite) {
                 neigh++;
                 cont_stuck = 0;
-                currentSol.copy(bestSol);
             }
+            currentSol.copy(bestSol);
         }
         runTime = (int) (System.currentTimeMillis() - t);
     }
