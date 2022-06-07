@@ -8,7 +8,8 @@ public class VND {
         this.tsp = tsp;
     }
 
-    public void run(Route r) {
+    public boolean run(Route r) {
+        boolean chg = false;
         boolean imp = true;
         while (imp) {
             imp = false;
@@ -18,8 +19,10 @@ public class VND {
                 imp = r.opt_2_first_imp();
             if (!imp)
                 imp = r.replace_first_imp();
-
+            if(imp)
+                chg = true;
         }
+        return chg;
     }
 
     public void run(Neigh... n) {

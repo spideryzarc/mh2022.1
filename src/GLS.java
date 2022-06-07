@@ -63,6 +63,7 @@ public class GLS implements Solver {
         vnd.run(currentSol);
         bestSol = new Route(tsp);
         bestSol.copy(currentSol);
+        System.out.println(" GLS " + bestSol.cost);
 
         for (int i = 0; i < ite; i++) {
             updatePenalties(currentSol);

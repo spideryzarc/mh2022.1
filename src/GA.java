@@ -1,4 +1,3 @@
-import java.sql.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -11,15 +10,15 @@ public class GA implements Solver {
     private int runTime;
     private Route bestSol;
     int ite;
-    int pop_size;
+    int iniPopSize;
     int K;
     boolean rank;
     TSP tsp;
 
-    public GA(TSP tsp, int ite, int pop_size, int k, boolean rank) {
+    public GA(TSP tsp, int ite, int iniPopSize, int k, boolean rank) {
         this.tsp = tsp;
         this.ite = ite;
-        this.pop_size = pop_size;
+        this.iniPopSize = iniPopSize;
         K = k;
         this.rank = rank;
         used = new boolean[tsp.N];
@@ -27,36 +26,39 @@ public class GA implements Solver {
 
     @Override
     public void run() {
+        long t = System.currentTimeMillis();
         ArrayList<Route> pop = new ArrayList<>();
         ArrayList<Route> os = new ArrayList<>();
         initialize(pop);
-        bestSol =pop.get(0);
+        select(pop,os);
+        bestSol = pop.get(0);
+        System.out.println(" GA " + bestSol.cost);
 
         for (int i = 0; i < ite; i++) {
             offspring(os, pop);
-            os.addAll(pop);
-            select(pop,os);
-            if(bestSol.cost > pop.get(0).cost){
+            select(pop, os);
+            if (bestSol.cost > pop.get(0).cost) {
                 bestSol.copy(pop.get(0));
-                System.out.println(i+" GA "+bestSol.cost);
+                System.out.println(i + " GA " + bestSol.cost);
             }
         }
-
+        assert Utils.equals(bestSol.cost, tsp.cost(bestSol.v)) : "variável 'cost' está inconsistente";
+        runTime = (int) (System.currentTimeMillis() - t);
     }
 
     private void select(ArrayList<Route> pop, ArrayList<Route> os) {
-        pop.clear();
         //eliminar os repetidos
         HashSet<Route> aux = new HashSet<>();
         aux.addAll(os);
+        aux.addAll(pop);
         os.clear();
         os.addAll(aux);
-        if(rank){
-            Collections.sort(os,(a,b)->Double.compare(a.cost, b.cost));
-            for (int i = 0; i < K; i++)
-                pop.add(os.get(i));
-
-        }else {//torneio
+        //selecionar campeões
+        pop.clear();
+        if (rank) {
+            Collections.sort(os, (a, b) -> Double.compare(a.cost, b.cost));
+            pop.addAll(os.subList(0,Math.min(K,os.size())));
+        } else {//torneio
 
         }
 
@@ -68,6 +70,8 @@ public class GA implements Solver {
         for (int i = 1; i < pop.size(); i++)
             for (int j = 0; j < i; j++) {
                 Route r = crossover(pop.get(i), pop.get(j));
+                os.add(r);
+                r = crossover(pop.get(j), pop.get(i));
                 os.add(r);
             }
     }
@@ -108,11 +112,12 @@ public class GA implements Solver {
     }
 
     private void initialize(ArrayList<Route> pop) {
-        for (int i = 0; i < pop_size; i++) {
+        for (int i = 0; i < iniPopSize; i++) {
             Route r = new Route(tsp);
             r.randomize();
             pop.add(r);
         }
+        Collections.sort(pop, (a, b) -> Double.compare(a.cost, b.cost));
     }
 
 
