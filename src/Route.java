@@ -2,6 +2,7 @@ import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Objects;
 
 /**
  * Uma solução do TSP
@@ -534,5 +535,20 @@ public class Route {
 //            }
 //        }
 
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Route route = (Route) o;
+        return Double.compare(route.cost, cost) == 0 && Arrays.equals(v, route.v);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = Objects.hash(cost);
+        result = 31 * result + Arrays.hashCode(v);
+        return result;
     }
 }

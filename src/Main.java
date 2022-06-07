@@ -1,8 +1,8 @@
 public class Main {
     public static void main(String args[]) {
-        TSP tsp = new TSP(1000);
+        TSP tsp = new TSP(10);
         tsp.randomize();
-        int ite = 1000;
+        int ite = 10000;
 
         Solver solvers[] = new Solver[]{
 //                new RMS(tsp, ite),
@@ -11,7 +11,8 @@ public class Main {
 //                new GRASP(tsp, ite, 5, true),
 //                new SA(tsp, ite, 0.1e-2, 10e-2, .0001e-2),
 //                new TABU(tsp, ite, 100),
-                new GLS(tsp,ite,0.1,0.2)
+//                new GLS(tsp,ite,0.1,0.1)
+                new GA(tsp,ite,100,10,true)
         };
 
         for (Solver s : solvers) {
