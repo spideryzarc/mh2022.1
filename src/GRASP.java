@@ -62,7 +62,7 @@ public class GRASP implements Solver {
 
     private double w[];
 
-    private void greedyRandom(Route currentSol) {
+    public void greedyRandom(Route currentSol) {
         int v[] = currentSol.v;
         boolean[] visitado = new boolean[tsp.N];
         v[0] = 0;

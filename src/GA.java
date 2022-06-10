@@ -16,6 +16,7 @@ public class GA implements Solver {
     TSP tsp;
     private int map[];
     private VND vnd;
+    private GRASP grasp;
 
     public GA(TSP tsp, int ite, int iniPopSize, int k, boolean rank) {
         this.tsp = tsp;
@@ -26,6 +27,7 @@ public class GA implements Solver {
         used = new boolean[tsp.N];
         map = new int[tsp.N];
         vnd = new VND(tsp);
+        grasp = new GRASP(tsp,0,10,true);
     }
 
     @Override
@@ -76,12 +78,18 @@ public class GA implements Solver {
             for (int j = 0; j < i; j++) {
                 Route a = elite.get(i);
                 Route b = elite.get(j);
-                os.add(twoPointsCrossover(a, b));
-                os.add(twoPointsCrossover(b, a));
-                os.add(orderCrossover(a, b));
-                os.add(orderCrossover(b, a));
-                os.add(partiallyMappedCrossover(a, b));
-                os.add(partiallyMappedCrossover(b, a));
+//                os.add(twoPointsCrossover(a, b));
+//                os.add(twoPointsCrossover(b, a));
+                Route c;
+                c = orderCrossover(a, b);
+                vnd.run(c);
+                os.add(c);
+                c = orderCrossover(b, a);
+                vnd.run(c);
+                os.add(c);
+//                os.add(orderCrossover(b, a));
+//                os.add(partiallyMappedCrossover(a, b));
+//                os.add(partiallyMappedCrossover(b, a));
             }
     }
 
@@ -246,6 +254,7 @@ public class GA implements Solver {
         for (int i = 0; i < iniPopSize; i++) {
             Route r = new Route(tsp);
             r.randomize();
+            grasp.greedyRandom(r);
             vnd.run(r);
             pop.add(r);
             System.out.println(i + " inipop " + r.cost);
