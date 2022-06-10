@@ -15,6 +15,7 @@ public class GA implements Solver {
     boolean rank;
     TSP tsp;
     private int map[];
+    private VND vnd;
 
     public GA(TSP tsp, int ite, int iniPopSize, int k, boolean rank) {
         this.tsp = tsp;
@@ -24,6 +25,7 @@ public class GA implements Solver {
         this.rank = rank;
         used = new boolean[tsp.N];
         map = new int[tsp.N];
+        vnd = new VND(tsp);
     }
 
     @Override
@@ -43,7 +45,7 @@ public class GA implements Solver {
                 bestSol.copy(pop.get(0));
                 System.out.println(i + " GA " + bestSol.cost);
             }
-            System.out.println(pop.get(pop.size()-1).cost);
+//            System.out.println(pop.get(pop.size()-1).cost);
         }
         assert Utils.equals(bestSol.cost, tsp.cost(bestSol.v)) : "variável 'cost' está inconsistente";
         runTime = (int) (System.currentTimeMillis() - t);
@@ -244,7 +246,9 @@ public class GA implements Solver {
         for (int i = 0; i < iniPopSize; i++) {
             Route r = new Route(tsp);
             r.randomize();
+            vnd.run(r);
             pop.add(r);
+            System.out.println(i + " inipop " + r.cost);
         }
         Collections.sort(pop, (a, b) -> Double.compare(a.cost, b.cost));
     }
