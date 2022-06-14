@@ -17,8 +17,11 @@ public class GA implements Solver {
     private int map[];
     private VND vnd;
     private GRASP grasp;
+    Disturbances dist;
+    final private double MR;
 
-    public GA(TSP tsp, int ite, int iniPopSize, int k, boolean rank) {
+    public GA(TSP tsp, int ite, int iniPopSize, int k, double MR, boolean rank) {
+        this.MR = MR;
         this.tsp = tsp;
         this.ite = ite;
         this.iniPopSize = iniPopSize;
@@ -27,7 +30,8 @@ public class GA implements Solver {
         used = new boolean[tsp.N];
         map = new int[tsp.N];
         vnd = new VND(tsp);
-        grasp = new GRASP(tsp,0,10,true);
+        grasp = new GRASP(tsp, 0, 3, true);
+        dist = new Disturbances(tsp);
     }
 
     @Override
@@ -37,7 +41,8 @@ public class GA implements Solver {
         ArrayList<Route> os = new ArrayList<>();
         initialize(pop);
         select(pop, os);
-        bestSol = pop.get(0);
+        bestSol = new Route(tsp);
+        bestSol.copy(pop.get(0));
         System.out.println(" GA " + bestSol.cost);
 
         for (int i = 0; i < ite; i++) {
@@ -47,10 +52,25 @@ public class GA implements Solver {
                 bestSol.copy(pop.get(0));
                 System.out.println(i + " GA " + bestSol.cost);
             }
-//            System.out.println(pop.get(pop.size()-1).cost);
+            mutation(pop);
+//            System.out.println(pop.get(pop.size() - 1).cost);
         }
         assert Utils.equals(bestSol.cost, tsp.cost(bestSol.v)) : "variável 'cost' está inconsistente";
         runTime = (int) (System.currentTimeMillis() - t);
+    }
+
+    private void mutation(ArrayList<Route> pop) {
+        for (Route r : pop)
+            if (Utils.rd.nextDouble() < MR) {
+                int x = Utils.rd.nextInt(3);
+                if (x == 0)
+                    dist.shufflerWindows(r, 5, 10);
+                if (x == 1)
+                    dist.moveRandomToBegin(r, 5, 10);
+                if (x == 2)
+                    dist.moveWindowsToEnd(r, 5, 10);
+
+            }
     }
 
     private void select(ArrayList<Route> pop, ArrayList<Route> os) {
@@ -78,18 +98,23 @@ public class GA implements Solver {
             for (int j = 0; j < i; j++) {
                 Route a = elite.get(i);
                 Route b = elite.get(j);
-//                os.add(twoPointsCrossover(a, b));
-//                os.add(twoPointsCrossover(b, a));
                 Route c;
+//                c = twoPointsCrossover(a, b);
+//                os.add(c);
+//                c = twoPointsCrossover(b, a);
+//                os.add(c);
                 c = orderCrossover(a, b);
-                vnd.run(c);
                 os.add(c);
                 c = orderCrossover(b, a);
-                vnd.run(c);
                 os.add(c);
-//                os.add(orderCrossover(b, a));
-//                os.add(partiallyMappedCrossover(a, b));
-//                os.add(partiallyMappedCrossover(b, a));
+//                c = partiallyMappedCrossover(a, b);
+//                os.add(c);
+//                c = partiallyMappedCrossover(b, a);
+//                os.add(c);
+                c = uniformCrossover(a, b);
+                os.add(c);
+                c = uniformCrossover(b, a);
+                os.add(c);
             }
     }
 
@@ -106,7 +131,7 @@ public class GA implements Solver {
         //seleciona dois pontos de corte
         int a = Utils.rd.nextInt(tsp.N);
         int b = Utils.rd.nextInt(tsp.N);
-        while (a == b)
+        while (Math.abs(a - b) < 0.1 * tsp.N || Math.abs(a - b) > 0.9 * tsp.N)
             b = Utils.rd.nextInt(tsp.N);
         if (a > b) {
             int aux = a;
@@ -117,29 +142,68 @@ public class GA implements Solver {
         Route C = new Route(tsp);
         Arrays.fill(used, false);
         Arrays.fill(C.v, -1);
+        //copia a começo
         for (int i = 0; i < a; i++) {
             C.v[i] = A.v[i];
             used[A.v[i]] = true;
         }
+        //copia o fim
         for (int i = b; i < tsp.N; i++) {
             C.v[i] = A.v[i];
             used[A.v[i]] = true;
         }
+        //copia o meio
         for (int i = a; i < b; i++) {
             if (!used[B.v[i]]) {
                 C.v[i] = B.v[i];
                 used[B.v[i]] = true;
             }
         }
-        for (int i = a; i < b; i++)
+        //completa os faltantes
+        for (int i = a, j = 0; i < b; i++)
             if (C.v[i] == -1) {
-                for (int j = 0; j < tsp.N; j++)
+                for (; j < tsp.N; j++)
                     if (!used[B.v[j]]) {
                         C.v[i] = B.v[j];
                         used[B.v[j]] = true;
                         break;
                     }
             }
+        C.cost = tsp.cost(C.v);
+        return C;
+    }
+
+    /**
+     * Uniform crossover
+     *
+     * @param A a solution
+     * @param B a solution
+     * @return recombination (crossover) of A and B
+     */
+    private Route uniformCrossover(Route A, Route B) {
+        Route C = new Route(tsp);
+        Arrays.fill(used, false);
+        Arrays.fill(C.v, -1);
+        int cont = 0;
+        for (int i = 0; i < tsp.N; i++)
+            if (Utils.rd.nextBoolean()) {
+                C.v[i] = A.v[i];
+                used[A.v[i]] = true;
+
+            } else {
+                map[cont] = i;
+                cont++;
+            }
+
+        for (int im = 0, j = 0; im < cont; im++) {
+            int i = map[im];
+            for (; j < tsp.N; j++)
+                if (!used[B.v[j]]) {
+                    C.v[i] = B.v[j];
+                    used[B.v[j]] = true;
+                    break;
+                }
+        }
         C.cost = tsp.cost(C.v);
         return C;
     }
@@ -255,7 +319,7 @@ public class GA implements Solver {
             Route r = new Route(tsp);
             r.randomize();
             grasp.greedyRandom(r);
-            vnd.run(r);
+//            vnd.run(r);
             pop.add(r);
             System.out.println(i + " inipop " + r.cost);
         }
