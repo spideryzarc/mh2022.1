@@ -92,6 +92,11 @@ public class GA implements Solver {
         os.clear();
         os.addAll(aux);
         //selecionar campeões
+        if(os.size()<= elite_size){
+            pop.clear();
+            pop.addAll(os);
+            return;
+        }
         pop.clear();
         Collections.sort(os, (a, b) -> Double.compare(a.cost, b.cost));
         pop.add(os.remove(0));
