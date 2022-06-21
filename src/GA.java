@@ -11,8 +11,9 @@ public class GA implements Solver {
     private Route bestSol;
     int ite;
     int iniPopSize;
-    int K;
-    boolean rank;
+    int elite_size;
+    int select_mode;
+    final int tournoment_k;
     TSP tsp;
     private int map[];
     private VND vnd;
@@ -20,13 +21,23 @@ public class GA implements Solver {
     Disturbances dist;
     final private double MR;
 
-    public GA(TSP tsp, int ite, int iniPopSize, int k, double MR, boolean rank) {
+    /**
+     * @param tsp          instância de TSP
+     * @param ite          número de gerações
+     * @param iniPopSize   número de indivíduos na população inicial
+     * @param elite_size   número de indivíduos selecionados para o cruzamento
+     * @param MR           taxa de mutação
+     * @param select_mode  [0: elitista, 1: roleta, 2: rank, 3: torneio]
+     * @param tournoment_k número de indivíduos por torneio
+     */
+    public GA(TSP tsp, int ite, int iniPopSize, int elite_size, double MR, int select_mode, int tournoment_k) {
+        this.tournoment_k = tournoment_k;
         this.MR = MR;
         this.tsp = tsp;
         this.ite = ite;
         this.iniPopSize = iniPopSize;
-        K = k;
-        this.rank = rank;
+        this.elite_size = elite_size;
+        this.select_mode = select_mode;
         used = new boolean[tsp.N];
         map = new int[tsp.N];
         vnd = new VND(tsp);
@@ -60,7 +71,7 @@ public class GA implements Solver {
     }
 
     private void mutation(ArrayList<Route> pop) {
-        for (Route r : pop)
+        for (Route r : pop.subList(1, pop.size()))
             if (Utils.rd.nextDouble() < MR) {
                 int x = Utils.rd.nextInt(3);
                 if (x == 0)
@@ -69,7 +80,7 @@ public class GA implements Solver {
                     dist.moveRandomToBegin(r, 5, 10);
                 if (x == 2)
                     dist.moveWindowsToEnd(r, 5, 10);
-
+                vnd.run(r);
             }
     }
 
@@ -82,11 +93,43 @@ public class GA implements Solver {
         os.addAll(aux);
         //selecionar campeões
         pop.clear();
-        if (rank) {
-            Collections.sort(os, (a, b) -> Double.compare(a.cost, b.cost));
-            pop.addAll(os.subList(0, Math.min(K, os.size())));
-        } else {//torneio
+        Collections.sort(os, (a, b) -> Double.compare(a.cost, b.cost));
+        pop.add(os.remove(0));
+        if (select_mode == 0) { //elitista
+            pop.addAll(os.subList(0, Math.min(elite_size, os.size())));
+        } else if (select_mode == 1) {//roleta
+            double[] weight = new double[os.size()];
+            for (int i = 0; i < weight.length; i++)
+                weight[i] = 1 / os.get(i).cost;
 
+            for (int i = 1; i < elite_size; i++) {
+                int x = Utils.roulette(weight);
+                pop.add(os.get(x));
+                weight[x] = 0;
+            }
+        } else if (select_mode == 2) {//rank
+            double[] weight = new double[os.size()];
+            for (int i = 0; i < weight.length; i++)
+                weight[i] = weight.length - i;
+
+            for (int i = 1; i < elite_size; i++) {
+                int x = Utils.roulette(weight);
+                pop.add(os.get(x));
+                weight[x] = 0;
+            }
+        } else if (select_mode == 3) {//torneio
+            for (int i = 1; i < elite_size; i++) {
+                int argmin = -1;
+                double min = Double.POSITIVE_INFINITY;
+                for (int j = 0; j < tournoment_k; j++) {
+                    int x = Utils.rd.nextInt(os.size());
+                    if (os.get(x).cost < min) {
+                        argmin = x;
+                        min = os.get(x).cost;
+                    }
+                }
+                pop.add(os.remove(argmin));
+            }
         }
 
 
@@ -104,17 +147,19 @@ public class GA implements Solver {
 //                c = twoPointsCrossover(b, a);
 //                os.add(c);
                 c = orderCrossover(a, b);
+                vnd.run(c);
                 os.add(c);
                 c = orderCrossover(b, a);
+                vnd.run(c);
                 os.add(c);
 //                c = partiallyMappedCrossover(a, b);
 //                os.add(c);
 //                c = partiallyMappedCrossover(b, a);
 //                os.add(c);
-                c = uniformCrossover(a, b);
-                os.add(c);
-                c = uniformCrossover(b, a);
-                os.add(c);
+//                c = uniformCrossover(a, b);
+//                os.add(c);
+//                c = uniformCrossover(b, a);
+//                os.add(c);
             }
     }
 
@@ -261,6 +306,20 @@ public class GA implements Solver {
         return C;
     }
 
+    @Override
+    public String toString() {
+        return "GA{" +
+                "runTime=" + runTime +
+                ", bestSol=" + bestSol.cost +
+                ", ite=" + ite +
+                ", iniPopSize=" + iniPopSize +
+                ", elite_size=" + elite_size +
+                ", select_mode=" + select_mode +
+                ", tournoment_k=" + tournoment_k +
+                ", MR=" + MR +
+                '}';
+    }
+
     /**
      * Partially mapped crossover
      *
@@ -319,7 +378,7 @@ public class GA implements Solver {
             Route r = new Route(tsp);
             r.randomize();
             grasp.greedyRandom(r);
-//            vnd.run(r);
+            vnd.run(r);
             pop.add(r);
             System.out.println(i + " inipop " + r.cost);
         }
