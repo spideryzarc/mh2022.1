@@ -12,8 +12,9 @@ public class Main {
 //                new SA(tsp, ite, 0.1e-2, 10e-2, .0001e-2),
 //                new TABU(tsp, ite, 100),
 //                new GLS(tsp,ite,0.1,0.1),
-//                new GA(tsp, ite, 10, 5, 0.1,2,2)
-                new DEA(tsp, ite, .7, 1000, 100,1,2)
+//                new GA(tsp, ite, 10, 5, 0.1,2,2),
+//                new SS(tsp, ite, 50, 5)
+//                new DEA(tsp, ite, .7, 1000, 500,0,2)
         };
 
         for (Solver s : solvers) {

@@ -30,7 +30,7 @@ public class DEA implements Solver {
         this.tournoment_k = tournoment_k;
         used = new boolean[tsp.N];
         weight = new double[tsp.N];
-        grasp = new GRASP(tsp,0,5,true);
+        grasp = new GRASP(tsp, 0, 5, true);
         vnd = new VND(tsp);
     }
 
@@ -53,8 +53,10 @@ public class DEA implements Solver {
         for (Route s : pop) {
             for (int i = 1; i < s.v.length; i++) {
                 d[s.v[i - 1]][s.v[i]]++;
+                d[s.v[i]][s.v[i - 1]]++;
             }
             d[s.v[s.v.length - 1]][s.v[0]]++;
+            d[s.v[0]][s.v[s.v.length - 1]]++;
         }
         for (int i = 0; i < d.length; i++)
             for (int j = 0; j < i; j++) {
@@ -137,12 +139,11 @@ public class DEA implements Solver {
                 bestSol.copy(pop.get(0));
                 System.out.println(k + " DEA " + bestSol.cost);
             }
-            marginal(pop,DM);
+            marginal(pop, DM);
             //D = D*(1-a)+DM*a
             for (int i = 0; i < D.length; i++)
                 for (int j = 0; j < i; j++) {
-                    D[i][j] = D[i][j]*(1-alpha)+DM[i][j]*alpha;
-                    D[j][i] = D[j][i]*(1-alpha)+DM[j][i]*alpha;
+                    D[j][i] = D[i][j] = D[i][j] * (1 - alpha) + DM[i][j] * alpha;
                 }
 
         }
@@ -166,16 +167,32 @@ public class DEA implements Solver {
                     if (used[k])
                         weight[k] = 0;
                     else
-                        weight[k] = Math.max(d[x][k], Utils.EPS);
+                        weight[k] = Math.max(d[x][k], 1e-9);
                 }
                 int y = Utils.roulette(weight);
                 r.v[j] = y;
-                used[y]=true;
+                used[y] = true;
             }
+            Utils.rollZero(r.v);
             r.cost = tsp.cost(r.v);
+//            System.out.println(r.cost);
 //            vnd.run(r);
             pop.add(r);
         }
+    }
+
+    @Override
+    public String toString() {
+        return "DEA{" +
+                "ite=" + ite +
+                ", cost=" + bestSol.cost +
+                ", alpha=" + alpha +
+                ", sample_size=" + sample_size +
+                ", runTime=" + runTime +
+                ", elite_size=" + elite_size +
+                ", select_mode=" + select_mode +
+                ", tournoment_k=" + tournoment_k +
+                '}';
     }
 
     @Override
