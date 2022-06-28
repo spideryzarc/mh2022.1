@@ -280,7 +280,7 @@ public class SS implements Solver {
 
     @Override
     public String toString() {
-        return "GA{" +
+        return "SS{" +
                 "runTime=" + runTime +
                 ", bestSol=" + bestSol.cost +
                 ", ite=" + ite +
