@@ -1,4 +1,3 @@
-import jdk.jshell.spi.ExecutionControl;
 
 import java.awt.geom.Point2D;
 import java.io.File;
@@ -32,7 +31,7 @@ public class TSP {
         c = new double[N][N];
     }
 
-    public TSP(String filepath) throws FileNotFoundException, ExecutionControl.NotImplementedException {
+    public TSP(String filepath) throws FileNotFoundException{
         Locale.setDefault(Locale.US);
         Scanner sc = new Scanner(new File(filepath));
         String str;
@@ -40,12 +39,12 @@ public class TSP {
         String edgeType = "";
         String weightFormat = "";
         do {
-            str = sc.nextLine().strip();
+            str = sc.nextLine().trim();
             String[] a = str.split(":");
             for (int i = 0; i < a.length; i++)
-                a[i] = a[i].strip().toUpperCase();
+                a[i] = a[i].trim().toUpperCase();
             if (a[0].equals("DIMENSION")) {
-                n = Integer.parseInt(a[1].strip());
+                n = Integer.parseInt(a[1].trim());
             }
             if (a[0].equals("EDGE_WEIGHT_TYPE")) {
                 edgeType = a[1];
@@ -68,7 +67,7 @@ public class TSP {
 
             for (int i = 0; i < N; i++)
                 for (int j = 0; j < i; j++)
-                    c[i][j] = c[j][i] = pontos.get(i).distance(pontos.get(j));
+                    c[i][j] = c[j][i] = Math.round(pontos.get(i).distance(pontos.get(j)));
         } else if (edgeType.equals("EXPLICIT")) {
             if (weightFormat.equals("UPPER_ROW")) {
                 for (int i = 0; i < n; i++) {
@@ -103,7 +102,7 @@ public class TSP {
             sc.close();
         }else{
 //            System.err.println("tipo de aresta não implementado: ");
-            throw new ExecutionControl.NotImplementedException("tipo de aresta não implementado: "+edgeType);
+            throw new RuntimeException ("tipo de aresta não implementado: "+edgeType);
         }
     }
 

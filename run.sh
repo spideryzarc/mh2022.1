@@ -1,0 +1,2 @@
+java Main /home/einstein/Documentos/mh2022.1/tsp_lib/berlin52.tsp /home/einstein/Documentos/mh2022.1/resume.txt ILS 100 50
+java Main /home/einstein/Documentos/mh2022.1/tsp_lib/berlin52.tsp /home/einstein/Documentos/mh2022.1/resume.txt ILS 100 50

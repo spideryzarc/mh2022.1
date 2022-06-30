@@ -1,8 +1,7 @@
 import java.awt.geom.Point2D;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Objects;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.*;
 
 /**
  * Uma solução do TSP
@@ -33,6 +32,18 @@ public class Route {
         cost = 0;
     }
 
+    public void loadSol(String filepath) throws FileNotFoundException {
+        Locale.setDefault(Locale.US);
+        Scanner sc = new Scanner(new File(filepath));
+        String str;
+        while (!sc.hasNextInt())
+            sc.nextLine();
+        for (int i = 0; i < tsp.N; i++) {
+            v[i] = sc.nextInt()-1;
+        }
+        cost = tsp.cost(v);
+        sc.close();
+    }
     @Override
     public String toString() {
         return "Route{" +

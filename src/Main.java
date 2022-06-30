@@ -1,47 +1,87 @@
-import jdk.jshell.spi.ExecutionControl;
 
+
+import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.Arrays;
 
 public class Main {
-    public static void main(String args[]) throws FileNotFoundException {
-//        TSP tsp = new TSP(1000);
-        TSP tsp = null;
-        try {
-            tsp = new TSP("tsp_lib/a280.tsp");
-        } catch (ExecutionControl.NotImplementedException e) {
-            e.printStackTrace();
-            System.exit(1);
+    public static void main(String args[]) throws IOException {
+        System.out.println(Arrays.toString(args));
+        // instancia outputfile metodo param1 param2 ...
+        String instance = args[0];
+        String output = args[1];
+        TSP tsp = new TSP(instance);
+        Solver solver = null;
+        if (args[2].equalsIgnoreCase("RMS")) {
+            int ite = Integer.parseInt(args[3]);
+            solver = new RMS(tsp, ite);
+        } else if (args[2].equalsIgnoreCase("ILS")) {
+            int ite = Integer.parseInt(args[3]);
+            int k = Integer.parseInt(args[4]);
+            solver = new ILS(tsp, ite,k);
+
         }
+        solver.run();
+        FileWriter fw = new FileWriter(new File(output), true);
 
-        tsp.randomize();
-        int ite = 1000;
+        String instanceName = (new File(instance)).getName().replace(".tsp", "");
 
-        Solver solvers[] = new Solver[]{
+        fw.write(String.format("%s, %.1f, %d, %s\n",
+                instanceName,
+                solver.getBestSol().cost,
+                solver.getRunTime(),
+                String.join(", ", Arrays.copyOfRange(args, 2, args.length))));
+        fw.close();
+
+    }
+
+
+//    public static void main(String args[]) throws FileNotFoundException {
+////        TSP tsp = new TSP(1000);
+//        TSP tsp = null;
+//        try {
+//            String name = "a280";
+//            tsp = new TSP("tsp_lib/"+name+".tsp");
+//            Route opt = new Route(tsp);
+//            opt.loadSol("tsp_lib/"+name+".opt.tour");
+//            System.out.println(opt);
+//            View.plot(opt, "opt.svg");
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            System.exit(1);
+//        }
+//
+////        tsp.randomize();
+//        int ite = 1000;
+//
+//        Solver solvers[] = new Solver[]{
 //                new RMS(tsp, ite),
-                new ILS(tsp, ite, 10),
+//                new ILS(tsp, ite, 10),
 //                new VNS(tsp, ite),
 //                new GRASP(tsp, ite, 5, true),
 //                new SA(tsp, ite, 0.1e-2, 10e-2, .0001e-2),
 //                new TABU(tsp, ite, 100),
 //                new GLS(tsp,ite,0.2,0.1),
 //                new GA(tsp, ite, 10, 5, 0.1,2,2),
-                new SS(tsp, ite, 50, 5)
+//                new SS(tsp, ite, 50, 5),
 //                new DEA(tsp, ite, .7, 1000, 500,0,2)
-        };
-
-        for (Solver s : solvers) {
-            s.run();
-        }
-
-        for (Solver s : solvers) {
-            System.out.println(s);
-            View.plot(s.getBestSol(), s.getClass().getSimpleName() + ".svg");
-        }
-
-//        Route r = solvers.getBestSol();
-//        View.plot(r, "plot.csv");
-
-    }
+//        };
+//
+//        for (Solver s : solvers) {
+//            s.run();
+//        }
+//
+//        for (Solver s : solvers) {
+//            System.out.println(s);
+//            View.plot(s.getBestSol(), s.getClass().getSimpleName() + ".svg");
+//        }
+//
+////        Route r = solvers.getBestSol();
+////        View.plot(r, "plot.csv");
+//
+//    }
 }
 
 /*

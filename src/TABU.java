@@ -119,7 +119,7 @@ public class TABU implements Solver {
                     if (delta < -0.001) {
                         Utils.swap(r.v, i, j);
                         if (isTabu(r.v)) {
-                            System.out.println("tabu1");
+//                            System.out.println("tabu1");
                             Utils.swap(r.v, i, j);
                             continue;
                         }
@@ -161,7 +161,7 @@ public class TABU implements Solver {
                             r.v[h] = aux;
                         }
                         if (isTabu(r.v)) {
-                            System.out.println("tabu2");
+//                            System.out.println("tabu2");
                             for (int k = i + 1, h = j; k < h; k++, h--) {
                                 int aux = r.v[k];
                                 r.v[k] = r.v[h];
@@ -218,7 +218,7 @@ public class TABU implements Solver {
                         }
                         if (isTabu(v)) {
                             System.arraycopy(v_aux, 0, r.v, 0, v_aux.length);
-                            System.out.println("tabu3");
+//                            System.out.println("tabu3");
                             continue;
                         }
                         r.cost += delta;

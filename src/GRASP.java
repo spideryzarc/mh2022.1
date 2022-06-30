@@ -84,7 +84,7 @@ public class GRASP implements Solver {
                 Object lista[] = fila.toArray();
                 Arrays.fill(w, 0);
                 for (int j = 0; j < lista.length; j++)
-                    w[j] = 1 / ((Candidate) lista[j]).score;
+                    w[j] = 1 / (((Candidate) lista[j]).score+1);
                 int x = Utils.roulette(w);
                 arg_j = ((Candidate) lista[x]).id;
             } else {
