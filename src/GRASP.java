@@ -26,6 +26,12 @@ public class GRASP implements Solver {
     }
 
     @Override
+    public String parametros() {
+        return String.join(",","ite=" + ite,
+                "k=" + k);
+    }
+
+    @Override
     public int getRunTime() {
         return runTime;
     }
@@ -84,7 +90,7 @@ public class GRASP implements Solver {
                 Object lista[] = fila.toArray();
                 Arrays.fill(w, 0);
                 for (int j = 0; j < lista.length; j++)
-                    w[j] = 1 / (((Candidate) lista[j]).score+1);
+                    w[j] = 1 / (((Candidate) lista[j]).score + 1);
                 int x = Utils.roulette(w);
                 arg_j = ((Candidate) lista[x]).id;
             } else {

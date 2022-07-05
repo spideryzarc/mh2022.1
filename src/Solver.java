@@ -13,4 +13,6 @@ public interface Solver {
      * @return tempo da última execução em milissegundos
      */
     int getRunTime();
+
+    String parametros();
 }

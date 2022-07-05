@@ -54,6 +54,13 @@ public class GLS implements Solver {
                 '}';
     }
 
+    public String parametros() {
+        return String.join(",","ite=" + ite,
+                       "A=" + A,
+                       "B=" + B
+                );
+    }
+
     public void run() {
         long t = System.currentTimeMillis();
 

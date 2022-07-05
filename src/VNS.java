@@ -38,7 +38,10 @@ public class VNS implements Solver {
     }
 
     private Disturbances dist;
-
+    @Override
+    public String parametros() {
+        return String.join(",","ite=" + ite);
+    }
     public VNS(TSP tsp, int ite) {
         this.ite = ite;
         this.tsp = tsp;

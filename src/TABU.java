@@ -45,6 +45,11 @@ public class TABU implements Solver {
                 '}';
     }
 
+    public String parametros() {
+        return String.join(",","ite=" + ite,
+                "tenure=" + tenure);
+    }
+
     public void run() {
         long t = System.currentTimeMillis();
         Route currentSol = new Route(tsp);

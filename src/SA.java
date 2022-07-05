@@ -27,6 +27,13 @@ public class SA implements Solver {
                 '}';
     }
 
+    public String parametros() {
+        return String.join(",","ite=" + ite,
+                "s_ref=" + s_ref,
+                        "p0=" + p0,
+                        "pf=" + pf);
+    }
+
     @Override
     public int getRunTime() {
         return runTime;

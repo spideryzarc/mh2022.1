@@ -18,6 +18,13 @@ public class SS implements Solver {
     private GRASP grasp;
     Disturbances dist;
 
+    @Override
+    public String parametros() {
+        return String.join(",","ite=" + ite,
+                "iniPopSize=" + iniPopSize,
+                "refSize=" + ref_size);
+    }
+
     /**
      * @param tsp        instância de TSP
      * @param ite        número de gerações

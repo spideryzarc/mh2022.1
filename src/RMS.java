@@ -24,6 +24,11 @@ public class RMS implements Solver {
         return runTime;
     }
 
+    @Override
+    public String parametros() {
+        return String.join(",","ite="+ite);
+    }
+
     private Route bestSol;
 
     public RMS(TSP tsp, int ite) {

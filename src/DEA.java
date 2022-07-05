@@ -196,6 +196,18 @@ public class DEA implements Solver {
     }
 
     @Override
+    public String parametros() {
+        return String.join(",",
+                "ite=" + ite,
+                "alpha=" + alpha,
+                "sample_size=" + sample_size,
+                "elite_size=" + elite_size,
+                "select_mode=" + select_mode,
+                "tournoment_k=" + tournoment_k
+        );
+    }
+
+    @Override
     public Route getBestSol() {
         return bestSol;
     }

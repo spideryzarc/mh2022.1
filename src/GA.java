@@ -92,7 +92,7 @@ public class GA implements Solver {
         os.clear();
         os.addAll(aux);
         //selecionar campeões
-        if(os.size()<= elite_size){
+        if (os.size() <= elite_size) {
             pop.clear();
             pop.addAll(os);
             return;
@@ -323,6 +323,16 @@ public class GA implements Solver {
                 ", tournoment_k=" + tournoment_k +
                 ", MR=" + MR +
                 '}';
+    }
+
+    @Override
+    public String parametros() {
+        return String.join(",","ite=" + ite,
+                "iniPopSize=" + iniPopSize,
+                "elite_size=" + elite_size,
+                "select_mode=" + select_mode,
+                "tournoment_k=" + tournoment_k,
+                "MR=" + MR);
     }
 
     /**

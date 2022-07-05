@@ -32,7 +32,7 @@ public class ILS implements Solver {
     /**
      * @param tsp Instância
      * @param ite número de iterações
-     * @param K grau da pertubação (2<= K < tsp.N)
+     * @param K   grau da pertubação (2<= K < tsp.N)
      */
     public ILS(TSP tsp, int ite, int K) {
         this.ite = ite;
@@ -42,7 +42,7 @@ public class ILS implements Solver {
         this.K = K;
     }
 
-//    private int[] aux;
+    //    private int[] aux;
 //
 //    private void shake(Route r) {
 //        int v[] = r.v;
@@ -59,6 +59,10 @@ public class ILS implements Solver {
 //        r.cost = tsp.cost(r.v);
 //
 //    }
+    @Override
+    public String parametros() {
+        return String.join(",","ite=" + ite, "k=" + K);
+    }
 
     public void run() {
         long t = System.currentTimeMillis();
@@ -69,7 +73,7 @@ public class ILS implements Solver {
         bestSol = new Route(tsp);
         bestSol.copy(currentSol);
         for (int i = 0; i < ite; i++) {
-            dist.moveRandomToBegin(currentSol,2,K);
+            dist.moveRandomToBegin(currentSol, 2, K);
             vnd.run(currentSol);
             if (currentSol.cost < bestSol.cost - Utils.EPS) {
                 bestSol.copy(currentSol);

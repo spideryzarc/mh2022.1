@@ -55,6 +55,9 @@ public class TSP {
 //            System.out.println(str);
         } while (!(str.equals("NODE_COORD_SECTION") || str.equals("EDGE_WEIGHT_SECTION")));
         N = n;
+        if(n > 2000){
+            throw new RuntimeException ("Não suporta  mais de 2000 pontos ");
+        }
         c = new double[N][N];
         if (edgeType.equals("EUC_2D")) {
             do {
